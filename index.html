@@ -34,85 +34,68 @@
         .welcome-header { 
             background: white; padding: 2rem; border-radius: 1rem; border: 1px solid var(--border);
             margin-bottom: 1.5rem; display: flex; align-items: center; gap: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .welcome-header i { color: var(--accent); font-size: 2.5rem; }
-        .welcome-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--primary); }
-        .welcome-header p { margin: 5px 0 0 0; color: var(--neutro); font-size: 0.95rem; }
 
-        .upload-card { background: var(--white); padding: 1.5rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 10px; flex-wrap: wrap; }
-        .brand { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .btn-cargar { background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
-        .btn-cargar.secondary { background: var(--neutro); }
+        .upload-card { background: var(--white); padding: 1.5rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 10px; }
+        .btn-cargar { background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         
         #upload { display: none; }
 
-        #reporte-area { display: none; animation: fadeIn 0.5s ease; }
+        #reporte-area { display: none; }
         .summary-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-        .info-card { background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .info-card { background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border); }
         .saldo-val { display: block; font-size: 2rem; font-weight: 800; }
         .estado-tag { display: inline-flex; align-items: center; padding: 0.25rem 1rem; border-radius: 2rem; color: white; font-size: 0.85rem; font-weight: 700; }
 
-        .table-container { background: white; border-radius: 1rem; border: 1px solid var(--border); overflow: auto; max-height: 70vh; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .table-container { background: white; border-radius: 1rem; border: 1px solid var(--border); overflow: auto; max-height: 70vh; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
-        th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
+        th { background: #f1f5f9; padding: 1rem; text-align: left; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* --- ESTADOS MANUALES (Prioridad Máxima con !important) --- */
-        .manual-verde { background-color: #22c55e !important; color: white !important; }
-        .manual-naranja { background-color: #f59e0b !important; color: white !important; }
-        .manual-rojo { background-color: #ef4444 !important; color: white !important; }
+        /* --- ESTADOS MANUALES: MÁXIMA PRIORIDAD --- */
+        .manual-verde { background-color: #22c55e !important; color: white !important; border: none !important; }
+        .manual-naranja { background-color: #f59e0b !important; color: white !important; border: none !important; }
+        .manual-rojo { background-color: #ef4444 !important; color: white !important; border: none !important; }
 
-        .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
+        .celda-interactiva { cursor: pointer; user-select: none; }
         .celda-interactiva:hover { filter: brightness(0.9); }
 
-        /* --- CLASES DE LOGICA --- */
+        /* --- CLASES DE LÓGICA (Sin !important para que el manual gane) --- */
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
-        .celda-comi-mp { background-color: var(--comi-mp) !important; color: var(--comi-mp-text) !important; }
+        .celda-comi-mp { background-color: var(--comi-mp); color: var(--comi-mp-text); }
         .celda-descripcion-mp { background-color: var(--mp-bg); color: var(--mp-color); border-left: 4px solid var(--mp-color); }
         .bg-total-fd { background-color: var(--bordo-claro); color: var(--bordo-texto); }
-        .celda-first-data { background-color: var(--bordo-claro) !important; color: var(--bordo-texto) !important; }
-        .celda-cb { background-color: var(--cb-bg) !important; color: var(--cb-texto) !important; }
+        .celda-first-data { background-color: var(--bordo-claro); color: var(--bordo-texto); }
+        .celda-cb { background-color: var(--cb-bg); color: var(--cb-texto); }
 
-        #calc-container { position: fixed; bottom: 80px; right: 25px; width: 220px; background: #1e293b; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 10000; padding: 12px; cursor: move; display: none; border: 1px solid #334155; }
-        #calc-display { width: 100%; border: none; background: #0f172a; color: #10b981; padding: 12px; text-align: right; font-family: monospace; font-size: 1.3rem; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
+        /* Estilos Calculadora */
+        #calc-container { position: fixed; bottom: 80px; right: 25px; width: 220px; background: #1e293b; border-radius: 10px; z-index: 10000; padding: 12px; display: none; }
+        #calc-display { width: 100%; background: #0f172a; color: #10b981; padding: 12px; text-align: right; font-size: 1.3rem; border-radius: 6px; border: none; margin-bottom: 10px; box-sizing: border-box; }
         .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .calc-buttons button { padding: 10px 2px; border: none; border-radius: 6px; background: #334155; color: white; cursor: pointer; font-weight: 600; }
-        #open-calc-btn { position: fixed; bottom: 20px; right: 25px; width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: white; border: none; cursor: pointer; z-index: 9999; display: none; align-items: center; justify-content: center; font-size: 1.2rem; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .calc-buttons button { padding: 10px; border-radius: 6px; border: none; background: #334155; color: white; cursor: pointer; }
+        #open-calc-btn { position: fixed; bottom: 20px; right: 25px; width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: white; border: none; cursor: pointer; z-index: 9999; display: none; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
 <div id="login-overlay">
     <div class="login-box">
-        <i class="fas fa-user-shield fa-3x" style="color: var(--accent); margin-bottom: 1rem;"></i>
         <h2>Sistema LMS</h2>
         <input type="text" id="user" placeholder="Usuario">
         <input type="password" id="pass" placeholder="Contraseña">
-        <button id="btnLogin">Ingresar al Sistema</button>
+        <button id="btnLogin">Ingresar</button>
     </div>
 </div>
 
 <div class="container" id="main-content">
     <div class="welcome-header">
-        <i class="fas fa-user-circle"></i>
-        <div>
-            <h1>Bienvenido, <span id="user-display"></span></h1>
-            <p>Sistema de Gestión Lector DBU-004 LMS</p>
-        </div>
+        <h1>Bienvenido, <span id="user-display"></span></h1>
     </div>
 
     <div class="upload-card">
-        <div class="brand">
-            <button class="btn-cargar" onclick="abrirSelector(false)">
-                <i class="fas fa-file-excel"></i> Lector DBU-004
-            </button>
-            <button class="btn-cargar secondary" onclick="abrirSelector(true)">
-                <i class="fas fa-history"></i> Ult. vez en "0"
-            </button>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn-cargar" onclick="abrirSelector(false)"><i class="fas fa-file-excel"></i> Lector DBU-004</button>
             <input type="file" id="upload" accept=".xlsx, .xls" />
             
             <button id="btnLock" class="btn-cargar" style="background: var(--positivo);">
@@ -120,29 +103,22 @@
             </button>
 
             <button id="btnResetTotal" class="btn-cargar" style="background: #64748b;">
-                <i class="fas fa-trash-alt"></i> Limpiar mis marcas
+                <i class="fas fa-trash-alt"></i> Limpiar
             </button>
         </div>
-        
-        <button id="downloadPdf" class="btn-cargar" style="background: #dc2626; display: none;">
-            <i class="fas fa-file-pdf"></i> Exportar a PDF
-        </button>
+        <button id="downloadPdf" class="btn-cargar" style="background: #dc2626; display: none;">PDF</button>
     </div>
 
     <div id="reporte-area">
         <div class="summary-grid">
             <div class="info-card">
-                <div>
-                    <h4>Unidad: <span id="unidadNombre" style="color:var(--accent)">-</span></h4>
-                    <h4>Líder de Cuenta: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
-                </div>
+                <h4>Unidad: <span id="unidadNombre">-</span></h4>
+                <h4>Líder: <span id="liderNombre">-</span></h4>
             </div>
-            <div class="info-card" style="border-top: 4px solid var(--accent);">
-                <div style="width: 100%;">
-                    <h4>Balance Final</h4>
-                    <span id="saldoFinal" class="saldo-val">$0,00</span>
-                    <div id="estadoTexto" class="estado-tag">Cargando...</div>
-                </div>
+            <div class="info-card">
+                <h4>Balance Final</h4>
+                <span id="saldoFinal" class="saldo-val">$0,00</span>
+                <div id="estadoTexto" class="estado-tag">Cargando...</div>
             </div>
         </div>
         <div class="table-container">
@@ -155,13 +131,9 @@
 </div>
 
 <div id="calc-container">
-    <div id="calc-header" style="color:white; display:flex; justify-content:space-between; padding:12px; cursor:move; font-size: 0.75rem; font-weight: 700;">
-        <span><i class="fas fa-calculator"></i> CALCULADORA</span>
-        <span id="close-calc" style="cursor:pointer; font-size: 1.2rem;">×</span>
-    </div>
     <input type="text" id="calc-display" readonly placeholder="0">
-    <div class="calc-buttons" style="padding: 0 12px 12px 12px;">
-        <button onclick="calcClear()" style="color: #ef4444;">C</button>
+    <div class="calc-buttons">
+        <button onclick="calcClear()">C</button>
         <button onclick="calcInput('/')">/</button>
         <button onclick="calcInput('*')">*</button>
         <button onclick="calcBackspace()"><i class="fas fa-backspace"></i></button>
@@ -184,7 +156,6 @@
 <button id="open-calc-btn" onclick="toggleCalc()"><i class="fas fa-calculator"></i></button>
 
 <script>
-    let modoBusquedaCero = false;
     let isLocked = true;
 
     document.getElementById('btnLock').addEventListener('click', function() {
@@ -194,205 +165,115 @@
         document.getElementById('lockStatus').innerText = isLocked ? 'ON' : 'OFF';
     });
 
-    function formatMoney(val) {
-        if (val === null || val === undefined || isNaN(val)) return "-";
-        return val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
     function rotarColor(e) {
         if (isLocked) return;
         const td = e.currentTarget;
-        const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
-        let actualIdx = 0;
-        estadosManuales.forEach((cls, idx) => {
-            if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
-        });
-        estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
-        let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
-        if (estadosManuales[siguienteIdx] !== '') {
-            td.classList.add(estadosManuales[siguienteIdx]);
-        }
+        const clases = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
+        let actual = 0;
+        clases.forEach((c, i) => { if(c !== '' && td.classList.contains(c)) actual = i; });
+        clases.forEach(c => { if(c !== '') td.classList.remove(c); });
+        let next = (actual + 1) % clases.length;
+        if(clases[next] !== '') td.classList.add(clases[next]);
     }
 
-    document.getElementById('btnResetTotal').addEventListener('click', function() {
-        if (isLocked) { alert("Desbloquee 'Lock colores' para limpiar."); return; }
-        const marcados = document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo');
-        marcados.forEach(el => el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo'));
-    });
-
-    async function validarLogin() {
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-        if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u]) {
-            document.getElementById('user-display').innerText = u;
-            document.getElementById('login-overlay').remove();
-            document.getElementById('main-content').style.display = 'block';
-            document.getElementById('open-calc-btn').style.display = 'flex';
-        } else { alert("Credenciales incorrectas."); }
-    }
-    document.getElementById('btnLogin').onclick = validarLogin;
-
-    function abrirSelector(esModoBusqueda) { modoBusquedaCero = esModoBusqueda; document.getElementById('upload').click(); }
-    
-    function limpiarMonto(valor) { 
-        if (valor === undefined || valor === null || valor === "") return null; 
-        if (typeof valor === 'number') return valor; 
-        let s = valor.toString().trim(); 
-        if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.'); 
-        else if (s.includes(',')) s = s.replace(',', '.'); 
-        let num = parseFloat(s.replace(/[^0-9.-]/g, '')); 
-        return isNaN(num) ? null : num; 
+    function formatMoney(val) {
+        if (val === null || isNaN(val)) return "-";
+        return val.toLocaleString('es-AR', { minimumFractionDigits: 2 });
     }
 
-    function excelDateToJS(serial) { 
-        if (typeof serial === 'number') return new Date(Math.round((serial - 25569) * 86400 * 1000)); 
-        let d = new Date(serial); return isNaN(d.getTime()) ? new Date(0) : d; 
+    function limpiarMonto(v) {
+        if (!v) return null;
+        if (typeof v === 'number') return v;
+        let s = v.toString().replace(/\./g, '').replace(',', '.');
+        return parseFloat(s.replace(/[^0-9.-]/g, ''));
     }
 
-    document.getElementById('upload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if(!file) return;
+    document.getElementById('btnLogin').onclick = () => {
+        document.getElementById('user-display').innerText = document.getElementById('user').value;
+        document.getElementById('login-overlay').remove();
+        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('open-calc-btn').style.display = 'flex';
+    };
+
+    function abrirSelector() { document.getElementById('upload').click(); }
+
+    document.getElementById('upload').onchange = (e) => {
         const reader = new FileReader();
-        reader.onload = function(event) {
-            const data = new Uint8Array(event.target.result);
-            const workbook = XLSX.read(data, {type: 'array', cellDates: true});
-            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: "A", defval: ""});
-            if(rows.length > 0) { 
-                if (modoBusquedaCero) { procesarUltimoCero(rows); } else { generarReporte(rows); } 
-            }
-            e.target.value = '';
+        reader.onload = (ev) => {
+            const data = new Uint8Array(ev.target.result);
+            const wb = XLSX.read(data, {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: "A", defval: ""});
+            generarReporte(rows);
         };
-        reader.readAsArrayBuffer(file);
-    });
-
-    function procesarUltimoCero(rows) {
-        let encontrado = false;
-        for (let i = rows.length - 1; i >= 1; i--) {
-            const valorL = limpiarMonto(rows[i].L);
-            if (valorL === 0 && rows[i].L !== "") {
-                alert(`Último $0:\nLíder: ${rows[i].D}\nFecha: ${rows[i].E}`);
-                encontrado = true; break;
-            }
-        }
-        if (!encontrado) alert("No se encontró balance en 0.");
-    }
+        reader.readAsArrayBuffer(e.target.files[0]);
+    };
 
     function generarReporte(rows) {
         document.getElementById('reporte-area').style.display = 'block';
         document.getElementById('unidadNombre').innerText = rows[1]?.B || "N/A";
         
-        let lider = "No identificado";
-        for(let r of rows) { if(r.C && r.C.toString().includes("HSBC")) { lider = r.D; break; } }
-        document.getElementById('liderNombre').innerText = lider;
+        const body = document.getElementById('tableBody');
+        body.innerHTML = '';
+        const hRow = document.getElementById('tableHeader');
+        hRow.innerHTML = '<th>Fecha</th><th>Banco</th><th>Detalle</th><th>Importe J</th><th>Importe K</th><th>Monto Neto</th><th>Comision MP</th><th>Total FD</th>';
 
-        const saldo = limpiarMonto(rows[rows.length-1]?.L) || 0;
-        document.getElementById('saldoFinal').innerText = "$" + formatMoney(saldo);
-        const tag = document.getElementById('estadoTexto');
-        tag.style.background = saldo < 0 ? 'var(--negativo)' : (saldo > 0 ? 'var(--positivo)' : 'var(--neutro)');
-        tag.innerText = saldo < 0 ? "SOBRE REPORTADO" : (saldo > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
-
-        let cJ = new Set(), cK = new Set();
-        for(let i=1; i<rows.length; i++) {
-            let mK = limpiarMonto(rows[i].K);
-            if(!mK) continue;
-            let fE = excelDateToJS(rows[i].E);
-            for(let j=1; j<rows.length; j++){
-                if(cJ.has(j)) continue;
-                if(mK === limpiarMonto(rows[j].J) && Math.abs(fE - excelDateToJS(rows[j].E)) <= 864000000) {
-                    cK.add(i); cJ.add(j); break;
-                }
-            }
-        }
-
-        const totalesFD = {};
-        rows.forEach(f => {
-            if((f.I||"").includes("FIRST DATA")) {
-                let fe = f.E ? f.E.toString() : "SF";
-                totalesFD[fe] = (totalesFD[fe]||0) + (limpiarMonto(f.J)||0);
+        let totalesFD = {};
+        rows.forEach(r => {
+            if(r.I?.includes("FIRST DATA")) {
+                totalesFD[r.E] = (totalesFD[r.E]||0) + (limpiarMonto(r.J)||0);
             }
         });
 
-        const cols = ['E','F','G','H','I','J','K'];
-        const hRow = document.getElementById('tableHeader');
-        hRow.innerHTML = '';
-        cols.forEach(c => { let th=document.createElement('th'); th.innerText=rows[0][c]||c; hRow.appendChild(th); });
-        hRow.innerHTML += '<th>Monto Neto</th><th>Comision MP</th><th>TOTAL FD</th>';
-
-        const body = document.getElementById('tableBody');
-        body.innerHTML = '';
-
         for(let i=1; i<rows.length; i++){
-            const fila = rows[i];
-            if(!fila.E && !fila.I) continue;
+            const r = rows[i];
             const tr = document.createElement('tr');
-            const desc = (fila.I || "").toString().toUpperCase();
-            const esMP = (fila.H||"").toString().startsWith("***") && desc.startsWith("MERPAGO");
-            const esFD = desc.includes("FIRST DATA");
-            const esCB = desc.includes("CB");
+            const desc = (r.I || "").toUpperCase();
             
-            cols.forEach(c => {
+            // Celdas básicas
+            [r.E, r.C, r.I, r.J, r.K].forEach((val, idx) => {
                 const td = document.createElement('td');
-                let monto = limpiarMonto(fila[c]);
-                td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
-                
-                if(c==='J' || c==='K') {
+                td.innerText = (idx > 2) ? formatMoney(limpiarMonto(val)) : val;
+                if(idx > 2) {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
-                    if(monto !== 0 && monto !== null) {
-                        if(c==='J' && esFD) { td.classList.add('celda-first-data'); } 
-                        else { td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' ); }
-                    }
                 }
-                
-                if(c==='I'){
-                    if(desc.includes("COMI MP")) td.classList.add('celda-comi-mp');
-                    if(esMP) td.classList.add('celda-descripcion-mp');
-                    if(esFD) td.classList.add('celda-first-data');
-                    if(esCB) td.classList.add('celda-cb');
+                // Colores lógicos
+                if(idx === 2) {
+                    if(desc.includes("MERPAGO")) td.classList.add('celda-descripcion-mp');
+                    if(desc.includes("FIRST DATA")) td.classList.add('celda-first-data');
                 }
                 tr.appendChild(td);
             });
 
+            // Columnas extras
             let neto="-", comi="-", tfd="-";
-            if(esMP) {
-                let v = Math.abs(limpiarMonto(fila.J)||0);
+            if(desc.includes("MERPAGO")) {
+                let v = Math.abs(limpiarMonto(r.J)||0);
                 comi = formatMoney(v/6.099);
                 neto = formatMoney(v - (v/6.099));
             }
-            if(esFD) {
-                let fe = fila.E ? fila.E.toString() : "SF";
-                tfd = formatMoney(totalesFD[fe]);
-            }
+            if(desc.includes("FIRST DATA")) tfd = formatMoney(totalesFD[r.E]);
 
             [neto, comi, tfd].forEach((v, idx) => {
                 const td = document.createElement('td');
                 td.innerText = v;
                 td.classList.add('celda-interactiva');
-                td.onclick = rotarColor; 
-                
-                if (v !== "-") {
-                    if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
-                    if (idx === 2) td.classList.add('bg-total-fd');
+                td.onclick = rotarColor;
+                if(v !== "-") {
+                    if(idx < 2) td.classList.add('celda-descripcion-mp');
+                    else td.classList.add('bg-total-fd');
                 }
                 tr.appendChild(td);
             });
-
             body.appendChild(tr);
         }
-        document.getElementById('downloadPdf').style.display = 'flex';
     }
 
-    document.getElementById('downloadPdf').onclick = () => {
-        const element = document.getElementById('reporte-area');
-        html2pdf().set({ margin: 5, filename: 'Reporte.pdf', html2canvas: { scale: 3 }, jsPDF: { orientation: 'landscape' } }).from(element).save();
-    };
-
-    function toggleCalc() { const c = document.getElementById('calc-container'); c.style.display = (c.style.display==='none'||c.style.display==='')?'block':'none'; }
+    function toggleCalc() { const c = document.getElementById('calc-container'); c.style.display = (c.style.display==='none')?'block':'none'; }
     function calcInput(v) { document.getElementById('calc-display').value += v; }
     function calcClear() { document.getElementById('calc-display').value = ''; }
     function calcBackspace() { let d = document.getElementById('calc-display'); d.value = d.value.slice(0,-1); }
-    function calcResult() { try { let res = eval(document.getElementById('calc-display').value); document.getElementById('calc-display').value = Number.isInteger(res) ? res : res.toFixed(2); } catch(e) { document.getElementById('calc-display').value = "Error"; } }
-    document.getElementById('close-calc').onclick = toggleCalc;
+    function calcResult() { try { document.getElementById('calc-display').value = eval(document.getElementById('calc-display').value); } catch(e) {} }
 </script>
 </body>
 </html>
