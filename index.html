@@ -58,7 +58,7 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* --- ESTADOS MANUALES --- */
+        /* --- ESTADOS MANUALES (Prioridad Máxima con !important) --- */
         .manual-verde { background-color: #22c55e !important; color: white !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; }
@@ -70,8 +70,8 @@
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
         .celda-comi-mp { background-color: var(--comi-mp) !important; color: var(--comi-mp-text) !important; }
-        .celda-descripcion-mp { background-color: var(--mp-bg) !important; color: var(--mp-color) !important; border-left: 4px solid var(--mp-color); }
-        .bg-total-fd { background-color: var(--bordo-claro) !important; color: var(--bordo-texto) !important; }
+        .celda-descripcion-mp { background-color: var(--mp-bg); color: var(--mp-color); border-left: 4px solid var(--mp-color); }
+        .bg-total-fd { background-color: var(--bordo-claro); color: var(--bordo-texto); }
         .celda-first-data { background-color: var(--bordo-claro) !important; color: var(--bordo-texto) !important; }
         .celda-cb { background-color: var(--cb-bg) !important; color: var(--cb-texto) !important; }
 
@@ -187,7 +187,6 @@
     let modoBusquedaCero = false;
     let isLocked = true;
 
-    // Lógica del Botón Lock
     document.getElementById('btnLock').addEventListener('click', function() {
         isLocked = !isLocked;
         this.style.background = isLocked ? 'var(--positivo)' : 'var(--negativo)';
@@ -202,17 +201,13 @@
 
     function rotarColor(e) {
         if (isLocked) return;
-
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
-
         let actualIdx = 0;
         estadosManuales.forEach((cls, idx) => {
             if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
         });
-
         estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
-
         let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
         if (estadosManuales[siguienteIdx] !== '') {
             td.classList.add(estadosManuales[siguienteIdx]);
@@ -220,25 +215,15 @@
     }
 
     document.getElementById('btnResetTotal').addEventListener('click', function() {
-        if (isLocked) {
-            alert("Desbloquee 'Lock colores' para limpiar las marcas.");
-            return;
-        }
+        if (isLocked) { alert("Desbloquee 'Lock colores' para limpiar."); return; }
         const marcados = document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo');
         marcados.forEach(el => el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo'));
     });
 
-    async function generarHash(string) {
-        const msgUint8 = new TextEncoder().encode(string);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
     async function validarLogin() {
         const u = document.getElementById('user').value;
         const p = document.getElementById('pass').value;
-        const hashIngresado = await generarHash(p);
-        if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u] === hashIngresado) {
+        if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u]) {
             document.getElementById('user-display').innerText = u;
             document.getElementById('login-overlay').remove();
             document.getElementById('main-content').style.display = 'block';
@@ -285,7 +270,7 @@
         for (let i = rows.length - 1; i >= 1; i--) {
             const valorL = limpiarMonto(rows[i].L);
             if (valorL === 0 && rows[i].L !== "") {
-                alert(`Último $0 encontrado:\nBanco: ${rows[i].C}\nLíder: ${rows[i].D}\nFecha: ${rows[i].E}`);
+                alert(`Último $0:\nLíder: ${rows[i].D}\nFecha: ${rows[i].E}`);
                 encontrado = true; break;
             }
         }
@@ -353,13 +338,9 @@
                 if(c==='J' || c==='K') {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
-                    
                     if(monto !== 0 && monto !== null) {
-                        if(c==='J' && esFD) {
-                            td.classList.add('celda-first-data');
-                        } else {
-                            td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
-                        }
+                        if(c==='J' && esFD) { td.classList.add('celda-first-data'); } 
+                        else { td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' ); }
                     }
                 }
                 
@@ -387,7 +368,7 @@
                 const td = document.createElement('td');
                 td.innerText = v;
                 td.classList.add('celda-interactiva');
-                td.onclick = rotarColor;
+                td.onclick = rotarColor; 
                 
                 if (v !== "-") {
                     if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
@@ -403,32 +384,15 @@
 
     document.getElementById('downloadPdf').onclick = () => {
         const element = document.getElementById('reporte-area');
-        html2pdf().set({ margin: 5, filename: 'Reporte_DBU004.pdf', html2canvas: { scale: 3 }, jsPDF: { orientation: 'landscape' } }).from(element).save();
+        html2pdf().set({ margin: 5, filename: 'Reporte.pdf', html2canvas: { scale: 3 }, jsPDF: { orientation: 'landscape' } }).from(element).save();
     };
 
     function toggleCalc() { const c = document.getElementById('calc-container'); c.style.display = (c.style.display==='none'||c.style.display==='')?'block':'none'; }
     function calcInput(v) { document.getElementById('calc-display').value += v; }
     function calcClear() { document.getElementById('calc-display').value = ''; }
     function calcBackspace() { let d = document.getElementById('calc-display'); d.value = d.value.slice(0,-1); }
-    function calcResult() { 
-        try { 
-            let res = eval(document.getElementById('calc-display').value); 
-            document.getElementById('calc-display').value = Number.isInteger(res) ? res : res.toFixed(2);
-        } catch(e) { document.getElementById('calc-display').value = "Error"; setTimeout(calcClear, 1000); } 
-    }
+    function calcResult() { try { let res = eval(document.getElementById('calc-display').value); document.getElementById('calc-display').value = Number.isInteger(res) ? res : res.toFixed(2); } catch(e) { document.getElementById('calc-display').value = "Error"; } }
     document.getElementById('close-calc').onclick = toggleCalc;
-
-    const calc = document.getElementById("calc-container");
-    const header = document.getElementById("calc-header");
-    let px=0, py=0, cx=0, cy=0;
-    header.onmousedown = (e) => {
-        e.preventDefault(); cx=e.clientX; cy=e.clientY;
-        document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
-        document.onmousemove = (e) => {
-            e.preventDefault(); px=cx-e.clientX; py=cy-e.clientY; cx=e.clientX; cy=e.clientY;
-            calc.style.top = (calc.offsetTop - py) + "px"; calc.style.left = (calc.offsetLeft - px) + "px";
-        };
-    };
 </script>
 </body>
 </html>
