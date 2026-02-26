@@ -59,9 +59,30 @@
         .saldo-val { display: block; font-size: 2rem; font-weight: 800; }
         .estado-tag { display: inline-flex; align-items: center; padding: 0.25rem 1rem; border-radius: 2rem; color: white; font-size: 0.85rem; font-weight: 700; }
 
-        .table-container { background: white; border-radius: 1rem; border: 1px solid var(--border); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; }
+        /* --- MEJORA: FREEZE PANES --- */
+        .table-container { 
+            background: white; 
+            border-radius: 1rem; 
+            border: 1px solid var(--border); 
+            overflow: auto; 
+            max-height: 70vh; /* Ajusta la altura máxima para que se vea el scroll interno */
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
+        
+        th { 
+            background: #f1f5f9; 
+            color: var(--neutro); 
+            padding: 1rem; 
+            text-align: left; 
+            white-space: nowrap; 
+            position: sticky; /* Hace que el header sea fijo */
+            top: 0;           /* Lo fija al borde superior del contenedor */
+            z-index: 10;      /* Se asegura que esté por encima de las celdas */
+            border-bottom: 2px solid var(--border);
+        }
+
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
         .celda-match { background-color: var(--match-bg) !important; color: var(--match-text) !important; }
@@ -161,7 +182,13 @@
             </div>
         </div>
         <div class="table-container">
-            <table><thead><tr id="tableHeader"></tr></thead><tbody id="tableBody"></tbody></table>
+            <table>
+                <thead>
+                    <tr id="tableHeader">
+                        </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -184,7 +211,6 @@
 <script>
     let modoBusquedaCero = false;
 
-    // Función para formatear números a moneda Argentina (30.000,56)
     function formatMoney(val) {
         if (val === null || val === undefined || isNaN(val)) return "-";
         return val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -267,10 +293,7 @@
 
         const saldoNumerico = limpiarMonto(rows[rows.length - 1]?.L) || 0;
         const estadoTag = document.getElementById('estadoTexto');
-        
-        // Formateo Balance Final
         document.getElementById('saldoFinal').innerText = "$" + formatMoney(saldoNumerico);
-        
         estadoTag.style.backgroundColor = saldoNumerico < 0 ? 'var(--negativo)' : (saldoNumerico > 0 ? 'var(--positivo)' : 'var(--neutro)');
         estadoTag.innerText = saldoNumerico < 0 ? "SOBRE REPORTADO" : (saldoNumerico > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
 
@@ -321,7 +344,6 @@
                 let valorOriginal = fila[c];
                 let monto = limpiarMonto(valorOriginal);
                 
-                // Aplicar formato si es columna de montos (J o K)
                 if ((c === 'J' || c === 'K') && monto !== null) {
                     td.innerText = formatMoney(monto);
                 } else {
@@ -347,7 +369,6 @@
                 tr.appendChild(td);
             });
 
-            // Formateo de columnas calculadas
             let cNeto = "-", cCom = "-";
             if (esMP_Calculo) {
                 const valJ = Math.abs(limpiarMonto(fila.J) || 0);
@@ -399,4 +420,3 @@
 </script>
 </body>
 </html>
-
