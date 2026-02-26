@@ -387,7 +387,7 @@
                 const td = document.createElement('td');
                 td.innerText = v;
                 td.classList.add('celda-interactiva');
-                td.onclick = rotarColor; // Habilitado siempre el evento, filtrado por isLocked
+                td.onclick = rotarColor;
                 
                 if (v !== "-") {
                     if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
@@ -432,4 +432,3 @@
 </script>
 </body>
 </html>
-
