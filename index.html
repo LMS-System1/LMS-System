@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LMS System</title>
+    <title>LECTOR DBU-004 - LMS</title>
     
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="runtime.data.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,48 +23,50 @@
 
         body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--primary); }
         
-        /* LOGIN */
         #login-overlay { position: fixed; inset: 0; background: var(--primary); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: white; padding: 2rem; border-radius: 1rem; text-align: center; width: 350px; }
+        .login-box { background: white; padding: 2rem; border-radius: 1rem; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); width: 350px; }
         .login-box input { display: block; width: 100%; padding: 0.75rem; margin: 0.75rem 0; border: 1px solid var(--border); border-radius: 0.5rem; box-sizing: border-box; }
         .login-box button { width: 100%; padding: 0.75rem; background: var(--accent); border: none; color: white; cursor: pointer; border-radius: 0.5rem; font-weight: 600; }
         
         .container { max-width: 1450px; margin: 2rem auto; padding: 0 1.5rem; display: none; }
 
-        /* HEADER & CARGA */
-        .upload-card { background: var(--white); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 10px; }
-        .btn-cargar { background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .welcome-header { background: white; padding: 2rem; border-radius: 1rem; border: 1px solid var(--border); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .welcome-header i { color: var(--accent); font-size: 2.5rem; }
+
+        .upload-card { background: var(--white); padding: 1.5rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 10px; }
+        .btn-cargar { background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn-cargar.secondary { background: var(--neutro); }
         #upload { display: none; }
 
-        /* TABLA */
+        /* TABLA Y COLORES */
         .table-container { background: white; border-radius: 1rem; border: 1px solid var(--border); overflow: auto; max-height: 70vh; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
-        th { background: #f1f5f9; padding: 1rem; text-align: left; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
+        th { background: #f1f5f9; padding: 1rem; text-align: left; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); white-space: nowrap; }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
 
-        /* --- PRIORIDAD DE COLORES --- */
-        
-        /* 1. Colores del Sistema (Bajos en prioridad) */
-        .celda-match { background-color: var(--match-bg); color: var(--match-text); }
-        .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
-        .celda-descripcion-mp, .col-mp { background-color: var(--mp-bg); color: var(--mp-color); }
-        .celda-first-data, .col-fd { background-color: var(--bordo-claro); color: var(--bordo-texto); }
-        .celda-cb { background-color: var(--cb-bg); color: var(--cb-texto); }
-
-        /* 2. ESTADOS MANUALES (MÁXIMA PRIORIDAD CON !IMPORTANT) */
-        /* Estos pisarán el celeste, el lila o cualquier otro color previo */
+        /* PRIORIDAD DE COLORES: MANUAL PISA TODO */
         .manual-verde { background-color: #22c55e !important; color: white !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; }
 
-        .celda-interactiva { cursor: pointer; user-select: none; transition: filter 0.2s; }
-        .celda-interactiva:hover { filter: brightness(0.9); }
+        .celda-interactiva { cursor: pointer; user-select: none; }
+        .celda-match { background-color: var(--match-bg); color: var(--match-text); }
+        .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
+        .celda-descripcion-mp, .col-mp { background-color: var(--mp-bg); color: var(--mp-color); }
+        .celda-first-data, .col-fd, .bg-total-fd { background-color: var(--bordo-claro); color: var(--bordo-texto); }
+        .celda-cb { background-color: var(--cb-bg) !important; color: var(--cb-texto) !important; }
+
+        /* SUMMARY */
+        .summary-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .info-card { background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border); }
+        .saldo-val { display: block; font-size: 2rem; font-weight: 800; }
+        .estado-tag { display: inline-flex; align-items: center; padding: 0.25rem 1rem; border-radius: 2rem; color: white; font-size: 0.85rem; font-weight: 700; }
 
         /* CALCULADORA */
-        #calc-container { position: fixed; bottom: 80px; right: 25px; width: 220px; background: #1e293b; border-radius: 10px; padding: 12px; display: none; z-index: 10000; }
-        #calc-display { width: 100%; background: #0f172a; color: #10b981; padding: 10px; text-align: right; border: none; margin-bottom: 10px; border-radius: 5px; box-sizing: border-box; }
-        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-        .calc-buttons button { padding: 10px; border: none; border-radius: 5px; cursor: pointer; background: #334155; color: white; }
+        #calc-container { position: fixed; bottom: 80px; right: 25px; width: 220px; background: #1e293b; border-radius: 10px; z-index: 10000; padding: 12px; display: none; border: 1px solid #334155; }
+        #calc-display { width: 100%; border: none; background: #0f172a; color: #10b981; padding: 12px; text-align: right; font-size: 1.3rem; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
+        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .calc-buttons button { padding: 10px; border: none; border-radius: 6px; background: #334155; color: white; cursor: pointer; }
         #open-calc-btn { position: fixed; bottom: 20px; right: 25px; width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: white; border: none; cursor: pointer; z-index: 9999; display: none; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -71,32 +74,58 @@
 
 <div id="login-overlay">
     <div class="login-box">
+        <i class="fas fa-user-shield fa-3x" style="color: var(--accent); margin-bottom: 1rem;"></i>
         <h2>Sistema LMS</h2>
         <input type="text" id="user" placeholder="Usuario">
         <input type="password" id="pass" placeholder="Contraseña">
-        <button id="btnLogin">Entrar</button>
+        <button id="btnLogin">Ingresar al Sistema</button>
     </div>
 </div>
 
 <div class="container" id="main-content">
+    <div class="welcome-header">
+        <i class="fas fa-user-circle"></i>
+        <div>
+            <h1>Bienvenido, <span id="user-display"></span></h1>
+            <p>Sistema de Gestión Lector DBU-004 LMS</p>
+        </div>
+    </div>
+
     <div class="upload-card">
-        <div style="display:flex; gap:10px;">
-            <button class="btn-cargar" onclick="document.getElementById('upload').click()">
-                <i class="fas fa-file-excel"></i> Cargar DBU-004
+        <div style="display:flex; gap:12px; align-items:center;">
+            <button class="btn-cargar" onclick="abrirSelector(false)">
+                <i class="fas fa-file-excel"></i> Lector DBU-004
+            </button>
+            <button class="btn-cargar secondary" onclick="abrirSelector(true)">
+                <i class="fas fa-history"></i> Ult. vez en "0"
             </button>
             <input type="file" id="upload" accept=".xlsx, .xls" />
             
             <button id="btnLock" class="btn-cargar" style="background: var(--positivo);">
-                <i class="fas fa-lock"></i> Lock: <span id="lockStatus">ON</span>
+                <i class="fas fa-lock"></i> Lock colores: <span id="lockStatus">ON</span>
             </button>
 
             <button id="btnReset" class="btn-cargar" style="background: var(--neutro);">
-                <i class="fas fa-trash"></i> Limpiar Marcas
+                <i class="fas fa-trash-alt"></i> Limpiar mis marcas
             </button>
         </div>
+        <button id="downloadPdf" class="btn-cargar" style="background: #dc2626; display: none;">
+            <i class="fas fa-file-pdf"></i> Exportar a PDF
+        </button>
     </div>
 
     <div id="reporte-area" style="display:none;">
+        <div class="summary-grid">
+            <div class="info-card">
+                <h4>Unidad: <span id="unidadNombre" style="color:var(--accent)">-</span></h4>
+                <h4>Líder de Cuenta: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
+            </div>
+            <div class="info-card">
+                <h4>Balance Final</h4>
+                <span id="saldoFinal" class="saldo-val">$0,00</span>
+                <div id="estadoTexto" class="estado-tag">Cargando...</div>
+            </div>
+        </div>
         <div class="table-container">
             <table>
                 <thead><tr id="tableHeader"></tr></thead>
@@ -107,7 +136,7 @@
 </div>
 
 <div id="calc-container">
-    <input type="text" id="calc-display" readonly>
+    <input type="text" id="calc-display" readonly placeholder="0">
     <div class="calc-buttons">
         <button onclick="calcClear()">C</button>
         <button onclick="calcInput('/')">/</button>
@@ -130,9 +159,10 @@
 <button id="open-calc-btn" onclick="toggleCalc()"><i class="fas fa-calculator"></i></button>
 
 <script>
+    let modoBusquedaCero = false;
     let isLocked = true;
 
-    // Lógica del Lock
+    // BOTONES PRINCIPALES
     document.getElementById('btnLock').onclick = function() {
         isLocked = !isLocked;
         this.style.background = isLocked ? 'var(--positivo)' : 'var(--negativo)';
@@ -140,7 +170,13 @@
         document.getElementById('lockStatus').innerText = isLocked ? 'ON' : 'OFF';
     };
 
-    // Función para rotar colores (Verde -> Naranja -> Rojo -> Limpiar)
+    document.getElementById('btnReset').onclick = () => {
+        if(isLocked) return alert("Desbloquee el Lock primero");
+        document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo').forEach(el => {
+            el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo');
+        });
+    };
+
     function rotarColor(e) {
         if (isLocked) return;
         const td = e.currentTarget;
@@ -152,29 +188,30 @@
         if(clases[siguiente] !== '') td.classList.add(clases[siguiente]);
     }
 
-    document.getElementById('btnReset').onclick = () => {
-        if(isLocked) return alert("Desbloquee el Lock primero");
-        document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo').forEach(el => {
-            el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo');
-        });
+    // LOGIN
+    document.getElementById('btnLogin').onclick = () => {
+        const u = document.getElementById('user').value;
+        if(u) {
+            document.getElementById('user-display').innerText = u;
+            document.getElementById('login-overlay').remove();
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('open-calc-btn').style.display = 'flex';
+        }
     };
 
-    document.getElementById('btnLogin').onclick = () => {
-        document.getElementById('user-display').innerText = document.getElementById('user').value;
-        document.getElementById('login-overlay').remove();
-        document.getElementById('main-content').style.display = 'block';
-        document.getElementById('open-calc-btn').style.display = 'flex';
-    };
+    // PROCESAMIENTO EXCEL
+    function abrirSelector(modo) { modoBusquedaCero = modo; document.getElementById('upload').click(); }
 
     function limpiarMonto(v) {
-        if (!v) return 0;
+        if (!v || v === "") return 0;
         if (typeof v === 'number') return v;
-        let s = v.toString().replace(/\./g, '').replace(',', '.');
-        return parseFloat(s.replace(/[^0-9.-]/g, '')) || 0;
+        let s = v.toString().trim().replace(/\./g, '').replace(',', '.');
+        let n = parseFloat(s.replace(/[^0-9.-]/g, ''));
+        return isNaN(n) ? 0 : n;
     }
 
     function formatMoney(v) {
-        return v === 0 ? "-" : v.toLocaleString('es-AR', { minimumFractionDigits: 2 });
+        return v === 0 ? "-" : v.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     document.getElementById('upload').onchange = (e) => {
@@ -184,60 +221,94 @@
             const wb = XLSX.read(data, {type: 'array'});
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: "A", defval: ""});
             
-            const body = document.getElementById('tableBody');
-            const hRow = document.getElementById('tableHeader');
-            body.innerHTML = '';
-            hRow.innerHTML = '<th>Fecha</th><th>Banco</th><th>Detalle</th><th>Importe J</th><th>Importe K</th><th>Monto Neto</th><th>Comisión MP</th><th>Total FD</th>';
-            
-            let totalesFD = {};
-            rows.forEach(r => { if(r.I?.includes("FIRST DATA")) totalesFD[r.E] = (totalesFD[r.E]||0) + limpiarMonto(r.J); });
-
-            for(let i=1; i<rows.length; i++){
-                const r = rows[i];
-                if(!r.E && !r.I) continue;
-                const tr = document.createElement('tr');
-                const desc = (r.I || "").toUpperCase();
-
-                // Columnas A-K adaptadas
-                [r.E, r.C, r.I, r.J, r.K].forEach((val, idx) => {
-                    const td = document.createElement('td');
-                    td.innerText = (idx > 2) ? formatMoney(limpiarMonto(val)) : val;
-                    if(idx > 2) { td.classList.add('celda-interactiva'); td.onclick = rotarColor; }
-                    
-                    if(idx === 2) {
-                        if(desc.includes("MERPAGO")) td.classList.add('celda-descripcion-mp');
-                        if(desc.includes("FIRST DATA")) td.classList.add('celda-first-data');
-                        if(desc.includes("CB")) td.classList.add('celda-cb');
+            if (modoBusquedaCero) {
+                for (let i = rows.length - 1; i >= 1; i--) {
+                    if (limpiarMonto(rows[i].L) === 0) {
+                        alert(`Último $0 encontrado:\nLíder: ${rows[i].D}\nFecha: ${rows[i].E}`);
+                        break;
                     }
-                    tr.appendChild(td);
-                });
-
-                // Columnas calculadas
-                let neto = 0, comi = 0, tfd = 0;
-                if(desc.includes("MERPAGO")) {
-                    let v = Math.abs(limpiarMonto(r.J));
-                    comi = v / 6.099; neto = v - comi;
                 }
-                if(desc.includes("FIRST DATA")) tfd = totalesFD[r.E];
-
-                [neto, comi, tfd].forEach((v, idx) => {
-                    const td = document.createElement('td');
-                    td.innerText = formatMoney(v);
-                    td.classList.add('celda-interactiva');
-                    td.onclick = rotarColor;
-                    if(v !== 0) {
-                        if(idx < 2) td.classList.add('col-mp');
-                        else td.classList.add('col-fd');
-                    }
-                    tr.appendChild(td);
-                });
-                body.appendChild(tr);
+            } else {
+                generarReporte(rows);
             }
-            document.getElementById('reporte-area').style.display = 'block';
         };
         reader.readAsArrayBuffer(e.target.files[0]);
     };
 
+    function generarReporte(rows) {
+        document.getElementById('reporte-area').style.display = 'block';
+        document.getElementById('unidadNombre').innerText = rows[1]?.B || "N/A";
+        
+        let lider = "-";
+        for(let r of rows) { if(r.C?.includes("HSBC")) { lider = r.D; break; } }
+        document.getElementById('liderNombre').innerText = lider;
+
+        const saldo = limpiarMonto(rows[rows.length-1]?.L);
+        document.getElementById('saldoFinal').innerText = "$" + formatMoney(saldo);
+        const tag = document.getElementById('estadoTexto');
+        tag.style.background = saldo < 0 ? 'var(--negativo)' : (saldo > 0 ? 'var(--positivo)' : 'var(--neutro)');
+        tag.innerText = saldo < 0 ? "SOBRE REPORTADO" : (saldo > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
+
+        const body = document.getElementById('tableBody');
+        const hRow = document.getElementById('tableHeader');
+        body.innerHTML = '';
+        const cols = ['E','F','G','H','I','J','K'];
+        hRow.innerHTML = '';
+        cols.forEach(c => { let th = document.createElement('th'); th.innerText = rows[0][c] || c; hRow.appendChild(th); });
+        hRow.innerHTML += '<th>Monto Neto</th><th>Comisión MP</th><th>TOTAL FD</th>';
+
+        let totalesFD = {};
+        rows.forEach(r => { if(r.I?.includes("FIRST DATA")) totalesFD[r.E] = (totalesFD[r.E]||0) + limpiarMonto(r.J); });
+
+        for(let i=1; i<rows.length; i++){
+            const r = rows[i];
+            if(!r.E && !r.I) continue;
+            const tr = document.createElement('tr');
+            const desc = (r.I || "").toUpperCase();
+            
+            cols.forEach(c => {
+                const td = document.createElement('td');
+                let val = r[c];
+                td.innerText = (c==='J' || c==='K') ? formatMoney(limpiarMonto(val)) : val;
+                
+                if(c==='J' || c==='K') {
+                    td.classList.add('celda-interactiva');
+                    td.onclick = rotarColor;
+                    if(limpiarMonto(val) !== 0) td.classList.add('celda-sin-match');
+                }
+                if(c==='I'){
+                    if(desc.includes("MERPAGO")) td.classList.add('celda-descripcion-mp');
+                    if(desc.includes("FIRST DATA")) td.classList.add('celda-first-data');
+                    if(desc.includes("CB")) td.classList.add('celda-cb');
+                }
+                tr.appendChild(td);
+            });
+
+            // Extras
+            let neto = 0, comi = 0, tfd = 0;
+            if(desc.includes("MERPAGO")) {
+                let v = Math.abs(limpiarMonto(r.J));
+                comi = v / 6.099; neto = v - comi;
+            }
+            if(desc.includes("FIRST DATA")) tfd = totalesFD[r.E];
+
+            [neto, comi, tfd].forEach((v, idx) => {
+                const td = document.createElement('td');
+                td.innerText = formatMoney(v);
+                td.classList.add('celda-interactiva');
+                td.onclick = rotarColor;
+                if(v !== 0) {
+                    if(idx < 2) td.classList.add('col-mp');
+                    else td.classList.add('bg-total-fd');
+                }
+                tr.appendChild(td);
+            });
+            body.appendChild(tr);
+        }
+        document.getElementById('downloadPdf').style.display = 'block';
+    }
+
+    // CALCULADORA FUNCIONES
     function toggleCalc() { const c = document.getElementById('calc-container'); c.style.display = (c.style.display==='none')?'block':'none'; }
     function calcInput(v) { document.getElementById('calc-display').value += v; }
     function calcClear() { document.getElementById('calc-display').value = ''; }
