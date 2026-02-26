@@ -58,7 +58,6 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* --- ESTADOS MANUALES --- */
         .manual-verde { background-color: #22c55e !important; color: white !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; }
@@ -66,7 +65,6 @@
         .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
         .celda-interactiva:hover { filter: brightness(0.9); }
 
-        /* --- CLASES DE LOGICA --- */
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
         .celda-comi-mp { background-color: var(--comi-mp) !important; color: var(--comi-mp-text) !important; }
@@ -187,7 +185,6 @@
     let modoBusquedaCero = false;
     let isLocked = true;
 
-    // Lógica del Botón Lock
     document.getElementById('btnLock').addEventListener('click', function() {
         isLocked = !isLocked;
         this.style.background = isLocked ? 'var(--positivo)' : 'var(--negativo)';
@@ -202,17 +199,13 @@
 
     function rotarColor(e) {
         if (isLocked) return;
-
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
-
         let actualIdx = 0;
         estadosManuales.forEach((cls, idx) => {
             if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
         });
-
         estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
-
         let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
         if (estadosManuales[siguienteIdx] !== '') {
             td.classList.add(estadosManuales[siguienteIdx]);
@@ -280,58 +273,63 @@
         reader.readAsArrayBuffer(file);
     });
 
+    // ESTA FUNCIÓN ES LA QUE SE ENCARGA DE MOSTRAR LA TABLA EN LUGAR DEL ALERT
     function procesarUltimoCero(rows) {
         const areaReporte = document.getElementById('reporte-area');
         const body = document.getElementById('tableBody');
         const hRow = document.getElementById('tableHeader');
         
-        areaReporte.style.display = 'block';
+        // Limpieza y preparación de la vista
         hRow.innerHTML = '';
         body.innerHTML = '';
+        areaReporte.style.display = 'block';
 
-        let datoEncontrado = null;
+        let filaEncontrada = null;
 
+        // Búsqueda del último cero de abajo hacia arriba
         for (let i = rows.length - 1; i >= 1; i--) {
             const valorL = limpiarMonto(rows[i].L);
             if (valorL === 0 && rows[i].L !== "") {
-                datoEncontrado = rows[i];
+                filaEncontrada = rows[i];
                 break;
             }
         }
 
-        if (datoEncontrado) {
-            const cols = ['C', 'D', 'E', 'L'];
-            const nombres = ['Banco', 'Líder', 'Fecha', 'Balance'];
+        if (filaEncontrada) {
+            // Definir columnas personalizadas para esta vista
+            const columnasBusqueda = ['C', 'D', 'E', 'L'];
+            const encabezadosBusqueda = ['Banco', 'Líder', 'Fecha', 'Balance'];
             
-            nombres.forEach(nom => {
+            encabezadosBusqueda.forEach(txt => {
                 let th = document.createElement('th');
-                th.innerText = nom;
+                th.innerText = txt;
                 hRow.appendChild(th);
             });
 
             const tr = document.createElement('tr');
-            cols.forEach(c => {
+            columnasBusqueda.forEach(col => {
                 const td = document.createElement('td');
-                let valor = datoEncontrado[c];
-                if (c === 'L') {
-                    td.innerText = "$" + formatMoney(limpiarMonto(valor));
-                    td.classList.add('celda-match');
+                if (col === 'L') {
+                    td.innerText = "$ 0,00";
+                    td.classList.add('celda-match'); // Fondo verde
                 } else {
-                    td.innerText = valor || '';
+                    td.innerText = filaEncontrada[col] || '';
                 }
                 tr.appendChild(td);
             });
             body.appendChild(tr);
 
-            document.getElementById('unidadNombre').innerText = "Búsqueda Histórica";
-            document.getElementById('liderNombre').innerText = datoEncontrado.D || "N/A";
+            // Actualizar tarjetas informativas
+            document.getElementById('unidadNombre').innerText = "Registro Histórico";
+            document.getElementById('liderNombre').innerText = filaEncontrada.D || "N/A";
             document.getElementById('saldoFinal').innerText = "$ 0,00";
+            
             const tag = document.getElementById('estadoTexto');
             tag.innerText = "ÚLTIMO CIERRE ENCONTRADO";
             tag.style.background = "var(--neutro)";
             document.getElementById('downloadPdf').style.display = 'none';
         } else {
-            alert("No se encontró balance en 0.");
+            alert("No se encontró ningún balance en $0 en este archivo.");
             areaReporte.style.display = 'none';
         }
     }
@@ -397,7 +395,6 @@
                 if(c==='J' || c==='K') {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
-                    
                     if(monto !== 0 && monto !== null) {
                         if(c==='J' && esFD) {
                             td.classList.add('celda-first-data');
@@ -432,14 +429,12 @@
                 td.innerText = v;
                 td.classList.add('celda-interactiva');
                 td.onclick = rotarColor; 
-                
                 if (v !== "-") {
                     if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
                     if (idx === 2) td.classList.add('bg-total-fd');
                 }
                 tr.appendChild(td);
             });
-
             body.appendChild(tr);
         }
         document.getElementById('downloadPdf').style.display = 'flex';
