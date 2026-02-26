@@ -351,8 +351,8 @@
             if (esMP_Calculo) {
                 const valJ = Math.abs(limpiarMonto(fila.J) || 0);
                 if (valJ > 0) {
-                    cCom = (valJ / 1.0699).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    cNeto = (valJ - (valJ / 1.0699)).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    cNeto = (valJ / 1.0699).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    cCom = (valJ - (valJ / 1.0699)).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 }
             }
 
@@ -395,4 +395,5 @@
 </script>
 </body>
 </html>
+
 
