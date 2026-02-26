@@ -273,20 +273,17 @@
         reader.readAsArrayBuffer(file);
     });
 
-    // ESTA FUNCIÓN ES LA QUE SE ENCARGA DE MOSTRAR LA TABLA EN LUGAR DEL ALERT
     function procesarUltimoCero(rows) {
         const areaReporte = document.getElementById('reporte-area');
         const body = document.getElementById('tableBody');
         const hRow = document.getElementById('tableHeader');
         
-        // Limpieza y preparación de la vista
         hRow.innerHTML = '';
         body.innerHTML = '';
         areaReporte.style.display = 'block';
 
         let filaEncontrada = null;
 
-        // Búsqueda del último cero de abajo hacia arriba
         for (let i = rows.length - 1; i >= 1; i--) {
             const valorL = limpiarMonto(rows[i].L);
             if (valorL === 0 && rows[i].L !== "") {
@@ -296,9 +293,8 @@
         }
 
         if (filaEncontrada) {
-            // Definir columnas personalizadas para esta vista
-            const columnasBusqueda = ['C', 'D', 'E', 'L'];
-            const encabezadosBusqueda = ['Banco', 'Líder', 'Fecha', 'Balance'];
+            const columnasBusqueda = ['B', 'C', 'D', 'E', 'L'];
+            const encabezadosBusqueda = ['Unidad', 'Banco', 'Líder', 'Fecha', 'Balance'];
             
             encabezadosBusqueda.forEach(txt => {
                 let th = document.createElement('th');
@@ -311,7 +307,7 @@
                 const td = document.createElement('td');
                 if (col === 'L') {
                     td.innerText = "$ 0,00";
-                    td.classList.add('celda-match'); // Fondo verde
+                    td.classList.add('celda-match');
                 } else {
                     td.innerText = filaEncontrada[col] || '';
                 }
@@ -319,8 +315,8 @@
             });
             body.appendChild(tr);
 
-            // Actualizar tarjetas informativas
-            document.getElementById('unidadNombre').innerText = "Registro Histórico";
+            // ACTUALIZACIÓN DE TARJETAS CON COLUMNA B Y D
+            document.getElementById('unidadNombre').innerText = filaEncontrada.B || "N/A";
             document.getElementById('liderNombre').innerText = filaEncontrada.D || "N/A";
             document.getElementById('saldoFinal').innerText = "$ 0,00";
             
