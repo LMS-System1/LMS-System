@@ -30,6 +30,11 @@
         .login-box button { width: 100%; padding: 0.75rem; background: var(--accent); border: none; color: white; cursor: pointer; border-radius: 0.5rem; font-weight: 600; transition: 0.3s; }
         
         .container { max-width: 1450px; margin: 2rem auto; padding: 0 1.5rem; display: none; }
+        
+        /* Estilo para el saludo */
+        .user-welcome { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin-bottom: 1rem; color: var(--neutro); font-size: 0.95rem; font-weight: 500; }
+        .user-welcome strong { color: var(--accent); text-transform: capitalize; }
+
         .upload-card { background: var(--white); padding: 1.5rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
         
         .brand { display: flex; gap: 12px; align-items: center; }
@@ -65,7 +70,6 @@
         .celda-first-data { background-color: var(--bordo-claro) !important; color: var(--bordo-texto) !important; }
         .celda-cb { background-color: var(--cb-bg) !important; color: var(--cb-texto) !important; }
 
-        /* --- ESTILOS CALCULADORA FLOTANTE --- */
         #calc-container {
             position: fixed; bottom: 80px; right: 25px; width: 220px;
             background: #1e293b; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -113,6 +117,10 @@
 </div>
 
 <div class="container" id="main-content">
+    <div class="user-welcome">
+        <i class="fas fa-user-circle"></i> Bienvenido, <strong id="user-display"></strong>
+    </div>
+
     <div class="upload-card">
         <div class="brand">
             <button class="btn-cargar" onclick="abrirSelector(false)">
@@ -229,9 +237,12 @@
         const hashIngresado = await generarHash(p);
 
         if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u] === hashIngresado) {
+            // MOSTRAR NOMBRE DE USUARIO
+            document.getElementById('user-display').innerText = u;
+            
             document.getElementById('login-overlay').remove();
             document.getElementById('main-content').style.display = 'block';
-            document.getElementById('open-calc-btn').style.display = 'flex'; // Muestra calc tras login
+            document.getElementById('open-calc-btn').style.display = 'flex';
         } else { 
             alert("Credenciales incorrectas."); 
         }
@@ -453,7 +464,6 @@
     function calcBackspace() { calcDisp.value = calcDisp.value.slice(0, -1); }
     function calcResult() {
         try {
-            // Eval es aceptable en este contexto controlado de calculadora
             let res = eval(calcDisp.value);
             calcDisp.value = Number.isInteger(res) ? res : res.toFixed(2);
         } catch(e) {
@@ -462,7 +472,7 @@
         }
     }
 
-    // --- HACER DRAGGABLE (ARRASTRABLE) ---
+    // --- HACER DRAGGABLE ---
     dragElement(document.getElementById("calc-container"));
     function dragElement(elmnt) {
         var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
