@@ -7,7 +7,7 @@
     
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="runtime.data.js"></script>
+    <script src="usuarios.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -31,21 +31,13 @@
         
         .container { max-width: 1450px; margin: 2rem auto; padding: 0 1.5rem; display: none; }
 
-        /* NUEVO ESTILO PARA BIENVENIDA GRANDE */
         .welcome-header { 
-            background: white; 
-            padding: 2rem; 
-            border-radius: 1rem; 
-            border: 1px solid var(--border);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 20px;
+            background: white; padding: 2rem; border-radius: 1rem; border: 1px solid var(--border);
+            margin-bottom: 1.5rem; display: flex; align-items: center; gap: 20px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .welcome-header i { color: var(--accent); font-size: 2.5rem; }
         .welcome-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--primary); }
-        .welcome-header span { color: var(--accent); text-transform: capitalize; }
         .welcome-header p { margin: 5px 0 0 0; color: var(--neutro); font-size: 0.95rem; }
 
         .upload-card { background: var(--white); padding: 1.5rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
@@ -58,7 +50,7 @@
         .historial-card { background: white; border-radius: 1rem; border: 2px solid var(--neutro); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .historial-header { background: var(--neutro); color: white; padding: 0.75rem 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
         .historial-table { width: 100%; border-collapse: collapse; }
-        .historial-table th { background: #f8fafc; color: var(--neutro); font-size: 0.75rem; text-transform: uppercase; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border); text-align: left; letter-spacing: 0.05em; }
+        .historial-table th { background: #f8fafc; color: var(--neutro); font-size: 0.75rem; text-transform: uppercase; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border); text-align: left; }
         .historial-table td { padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600; color: var(--primary); }
 
         #reporte-area { display: none; animation: fadeIn 0.5s ease; }
@@ -89,29 +81,13 @@
         }
         #calc-header { color: white; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; user-select: none; }
         #close-calc { cursor: pointer; color: #94a3b8; font-size: 1.2rem; }
-        #close-calc:hover { color: #ef4444; }
-        #calc-display { 
-            width: 100%; border: none; background: #0f172a; color: #10b981; 
-            padding: 12px; text-align: right; font-family: 'Courier New', monospace; font-size: 1.3rem;
-            border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; outline: none;
-        }
+        #calc-display { width: 100%; border: none; background: #0f172a; color: #10b981; padding: 12px; text-align: right; font-family: 'Courier New', monospace; font-size: 1.3rem; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; outline: none; }
         .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .calc-buttons button { 
-            padding: 10px 2px; border: none; border-radius: 6px; background: #334155; 
-            color: white; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s;
-        }
-        .calc-buttons button:hover { background: #475569; }
-        .calc-buttons button:active { transform: scale(0.95); }
+        .calc-buttons button { padding: 10px 2px; border: none; border-radius: 6px; background: #334155; color: white; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
         .btn-op { background: #3b82f6 !important; }
         .btn-eq { background: #10b981 !important; grid-row: span 2; }
         
-        #open-calc-btn {
-            position: fixed; bottom: 20px; right: 25px; width: 50px; height: 50px;
-            border-radius: 50%; background: var(--accent); color: white; border: none;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); z-index: 9999;
-            display: none; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s;
-        }
-        #open-calc-btn:hover { transform: scale(1.1); background: #2563eb; }
+        #open-calc-btn { position: fixed; bottom: 20px; right: 25px; width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); z-index: 9999; display: none; align-items: center; justify-content: center; font-size: 1.2rem; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -129,7 +105,6 @@
 </div>
 
 <div class="container" id="main-content">
-    
     <div class="welcome-header">
         <i class="fas fa-user-circle"></i>
         <div>
@@ -148,7 +123,7 @@
             </button>
             <input type="file" id="upload" accept=".xlsx, .xls" />
         </div>
-        <button id="downloadPdf" class="btn-pdf" style="background: #dc2626; color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; display: none; align-items: center; gap: 8px;">
+        <button id="downloadPdf" style="background: #dc2626; color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; display: none; align-items: center; gap: 8px;">
             <i class="fas fa-file-pdf"></i> Exportar a PDF
         </button>
     </div>
@@ -209,18 +184,22 @@
 <script>
     let modoBusquedaCero = false;
 
+    // Función para formatear números a moneda Argentina (30.000,56)
+    function formatMoney(val) {
+        if (val === null || val === undefined || isNaN(val)) return "-";
+        return val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     async function generarHash(string) {
         const msgUint8 = new TextEncoder().encode(string);
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     async function validarLogin() {
         const u = document.getElementById('user').value;
         const p = document.getElementById('pass').value;
         const hashIngresado = await generarHash(p);
-
         if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u] === hashIngresado) {
             document.getElementById('user-display').innerText = u;
             document.getElementById('login-overlay').remove();
@@ -232,9 +211,18 @@
     document.getElementById('btnLogin').addEventListener('click', validarLogin);
     document.getElementById('pass').addEventListener('keypress', (e) => { if(e.key === 'Enter') validarLogin(); });
 
-    // --- Lógica de archivos y negocio (abreviada para ahorrar espacio, pero igual a la anterior) ---
     function abrirSelector(esModoBusqueda) { modoBusquedaCero = esModoBusqueda; document.getElementById('upload').click(); }
-    function limpiarMonto(valor) { if (valor === undefined || valor === null || valor === "") return null; if (typeof valor === 'number') return valor; let s = valor.toString().trim(); if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.'); else if (s.includes(',')) s = s.replace(',', '.'); let num = parseFloat(s.replace(/[^0-9.-]/g, '')); return isNaN(num) ? null : num; }
+    
+    function limpiarMonto(valor) { 
+        if (valor === undefined || valor === null || valor === "") return null; 
+        if (typeof valor === 'number') return valor; 
+        let s = valor.toString().trim(); 
+        if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.'); 
+        else if (s.includes(',')) s = s.replace(',', '.'); 
+        let num = parseFloat(s.replace(/[^0-9.-]/g, '')); 
+        return isNaN(num) ? null : num; 
+    }
+
     function excelDateToJS(serial) { if (typeof serial === 'number') return new Date(Math.round((serial - 25569) * 86400 * 1000)); let d = new Date(serial); return isNaN(d.getTime()) ? new Date(0) : d; }
 
     document.getElementById('upload').addEventListener('change', function(e) {
@@ -276,9 +264,13 @@
         let liderEncontrado = "No encontrado";
         for (let i = 0; i < rows.length; i++) { if (rows[i].C && rows[i].C.toString().toUpperCase().includes("HSBC")) { liderEncontrado = rows[i].D || "Sin nombre"; break; } }
         document.getElementById('liderNombre').innerText = liderEncontrado;
+
         const saldoNumerico = limpiarMonto(rows[rows.length - 1]?.L) || 0;
         const estadoTag = document.getElementById('estadoTexto');
-        document.getElementById('saldoFinal').innerText = "$" + saldoNumerico.toLocaleString('es-AR', {minimumFractionDigits: 2});
+        
+        // Formateo Balance Final
+        document.getElementById('saldoFinal').innerText = "$" + formatMoney(saldoNumerico);
+        
         estadoTag.style.backgroundColor = saldoNumerico < 0 ? 'var(--negativo)' : (saldoNumerico > 0 ? 'var(--positivo)' : 'var(--neutro)');
         estadoTag.innerText = saldoNumerico < 0 ? "SOBRE REPORTADO" : (saldoNumerico > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
 
@@ -326,8 +318,16 @@
 
             colsVista.forEach(c => {
                 const td = document.createElement('td');
-                td.innerText = fila[c] || '';
-                let monto = limpiarMonto(fila[c]) || 0;
+                let valorOriginal = fila[c];
+                let monto = limpiarMonto(valorOriginal);
+                
+                // Aplicar formato si es columna de montos (J o K)
+                if ((c === 'J' || c === 'K') && monto !== null) {
+                    td.innerText = formatMoney(monto);
+                } else {
+                    td.innerText = valorOriginal || '';
+                }
+
                 if (c === 'I') {
                     if (esComiMP) td.classList.add('celda-comi-mp');
                     else if (esMP_Calculo) td.classList.add('celda-descripcion-mp');
@@ -337,22 +337,23 @@
                 else if (c === 'J') {
                     if (esCB) td.classList.add('celda-cb');
                     else if (esFirstData) td.classList.add('celda-first-data');
-                    else if (monto !== 0) td.classList.add(conciliadosJ.has(i) ? 'celda-match' : 'celda-sin-match');
+                    else if (monto !== 0 && monto !== null) td.classList.add(conciliadosJ.has(i) ? 'celda-match' : 'celda-sin-match');
                 } 
                 else if (c === 'K') {
                     if (esComiMP) td.classList.add('celda-comi-mp');
                     else if (esCB) td.classList.add('celda-cb');
-                    else if (monto !== 0) td.classList.add(conciliadosK.has(i) ? 'celda-match' : 'celda-sin-match');
+                    else if (monto !== 0 && monto !== null) td.classList.add(conciliadosK.has(i) ? 'celda-match' : 'celda-sin-match');
                 }
                 tr.appendChild(td);
             });
 
+            // Formateo de columnas calculadas
             let cNeto = "-", cCom = "-";
             if (esMP_Calculo) {
                 const valJ = Math.abs(limpiarMonto(fila.J) || 0);
                 if (valJ > 0) {
-                    cNeto = (valJ / 1.0699).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    cCom = (valJ - (valJ / 1.0699)).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    cCom = formatMoney(valJ / 6.099);
+                    cNeto = formatMoney(valJ - (valJ / 6.099));
                 }
             }
 
@@ -364,7 +365,10 @@
                     const nextDesc = (rows[next].I || "").toString().toUpperCase();
                     if (nextDesc.includes("FIRST DATA CONO SUR S")) { if ((rows[next].E ? rows[next].E.toString() : "Sin Fecha") === fechaActual) { esUltimaFilaDelGrupo = false; } break; }
                 }
-                if (esUltimaFilaDelGrupo) { cTotalFD = totalesFD[fechaActual].toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}); tieneTotal = true; }
+                if (esUltimaFilaDelGrupo) { 
+                    cTotalFD = formatMoney(totalesFD[fechaActual]); 
+                    tieneTotal = true; 
+                }
             }
             tr.innerHTML += `<td class="col-especial">${cNeto}</td><td class="col-especial">${cCom}</td><td class="col-fd-total ${tieneTotal ? 'bg-total-fd' : ''}">${cTotalFD}</td>`;
             tableBody.appendChild(tr);
@@ -395,5 +399,3 @@
 </script>
 </body>
 </html>
-
-
