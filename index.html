@@ -44,7 +44,7 @@
         .brand { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         .btn-cargar { background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
         .btn-cargar.secondary { background: var(--neutro); }
-        .btn-danger { background: #dc2626; color: white; }
+        
         #upload { display: none; }
 
         #reporte-area { display: none; animation: fadeIn 0.5s ease; }
@@ -110,23 +110,20 @@
     <div class="upload-card">
         <div class="brand">
             <button class="btn-cargar" onclick="abrirSelector(false)">
-                <i class="fas fa-file-excel"></i> Cargar Excel
+                <i class="fas fa-file-excel"></i> Lector DBU-004
             </button>
             <button class="btn-cargar secondary" onclick="abrirSelector(true)">
-                <i class="fas fa-search"></i> Buscar Último "0"
+                <i class="fas fa-history"></i> Ult. vez en "0"
             </button>
             <input type="file" id="upload" accept=".xlsx, .xls" />
             
-            <button id="btnToggleLimpieza" class="btn-cargar" style="background: var(--neutro);">
-                <i class="fas fa-eraser"></i> Borrador: <span id="txtModo">OFF</span>
-            </button>
             <button id="btnResetTotal" class="btn-cargar" style="background: #64748b;">
-                <i class="fas fa-trash-alt"></i> Limpiar Todo
+                <i class="fas fa-trash-alt"></i> Limpiar mis marcas
             </button>
         </div>
         
-        <button id="downloadPdf" class="btn-cargar btn-danger" style="display: none;">
-            <i class="fas fa-file-pdf"></i> PDF
+        <button id="downloadPdf" class="btn-cargar" style="background: #dc2626; display: none;">
+            <i class="fas fa-file-pdf"></i> Exportar a PDF
         </button>
     </div>
 
@@ -142,7 +139,7 @@
             <div class="info-card">
                 <div>
                     <h4>Unidad: <span id="unidadNombre" style="color:var(--accent)">-</span></h4>
-                    <h4>Líder: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
+                    <h4>Líder de Cuenta: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
                 </div>
             </div>
             <div class="info-card" style="border-top: 4px solid var(--accent);">
@@ -163,13 +160,13 @@
 </div>
 
 <div id="calc-container">
-    <div id="calc-header" style="color:white; display:flex; justify-content:space-between; padding-bottom:10px; cursor:move;">
+    <div id="calc-header" style="color:white; display:flex; justify-content:space-between; padding:12px; cursor:move; font-size: 0.75rem; font-weight: 700;">
         <span><i class="fas fa-calculator"></i> CALCULADORA</span>
-        <span id="close-calc" style="cursor:pointer">×</span>
+        <span id="close-calc" style="cursor:pointer; font-size: 1.2rem;">×</span>
     </div>
-    <input type="text" id="calc-display" readonly>
-    <div class="calc-buttons">
-        <button onclick="calcClear()">C</button>
+    <input type="text" id="calc-display" readonly placeholder="0">
+    <div class="calc-buttons" style="padding: 0 12px 12px 12px;">
+        <button onclick="calcClear()" style="color: #ef4444;">C</button>
         <button onclick="calcInput('/')">/</button>
         <button onclick="calcInput('*')">*</button>
         <button onclick="calcBackspace()"><i class="fas fa-backspace"></i></button>
@@ -193,7 +190,6 @@
 
 <script>
     let modoBusquedaCero = false;
-    let modoLimpiezaActivo = false;
 
     // --- FORMATEO ---
     function formatMoney(val) {
@@ -206,42 +202,23 @@
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
 
-        // Si el modo borrador está ON, quitamos marcas manuales y devolvemos el fondo a auto
-        if (modoLimpiezaActivo) {
-            estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
-            return;
-        }
-
-        // Detectar estado manual actual
         let actualIdx = 0;
         estadosManuales.forEach((cls, idx) => {
             if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
         });
 
-        // Limpiar clases manuales previas
         estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
 
-        // Siguiente estado
         let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
         if (estadosManuales[siguienteIdx] !== '') {
             td.classList.add(estadosManuales[siguienteIdx]);
         }
     }
 
-    // --- BOTONES DE LIMPIEZA ---
-    document.getElementById('btnToggleLimpieza').addEventListener('click', function() {
-        modoLimpiezaActivo = !modoLimpiezaActivo;
-        this.style.background = modoLimpiezaActivo ? 'var(--negativo)' : 'var(--neutro)';
-        document.getElementById('txtModo').innerText = modoLimpiezaActivo ? 'ON' : 'OFF';
-    });
-
+    // --- BOTÓN RESET TOTAL ---
     document.getElementById('btnResetTotal').addEventListener('click', function() {
-        if(confirm("¿Eliminar todas las marcas manuales de la tabla?")) {
-            const marcados = document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo');
-            marcados.forEach(el => {
-                el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo');
-            });
-        }
+        const marcados = document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo');
+        marcados.forEach(el => el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo'));
     });
 
     // --- LOGIN ---
@@ -314,20 +291,16 @@
         document.getElementById('reporte-area').style.display = 'block';
         document.getElementById('unidadNombre').innerText = rows[1]?.B || "N/A";
         
-        // Buscar Líder
         let lider = "No identificado";
         for(let r of rows) { if(r.C && r.C.toString().includes("HSBC")) { lider = r.D; break; } }
         document.getElementById('liderNombre').innerText = lider;
 
-        // Balance Final
         const saldo = limpiarMonto(rows[rows.length-1]?.L) || 0;
-        const sf = document.getElementById('saldoFinal');
-        sf.innerText = "$" + formatMoney(saldo);
+        document.getElementById('saldoFinal').innerText = "$" + formatMoney(saldo);
         const tag = document.getElementById('estadoTexto');
         tag.style.background = saldo < 0 ? 'var(--negativo)' : (saldo > 0 ? 'var(--positivo)' : 'var(--neutro)');
         tag.innerText = saldo < 0 ? "SOBRE REPORTADO" : (saldo > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
 
-        // Lógica de Match (J vs K)
         let cJ = new Set(), cK = new Set();
         for(let i=1; i<rows.length; i++) {
             let mK = limpiarMonto(rows[i].K);
@@ -341,7 +314,6 @@
             }
         }
 
-        // Totales First Data
         const totalesFD = {};
         rows.forEach(f => {
             if((f.I||"").includes("FIRST DATA")) {
@@ -365,6 +337,8 @@
             const tr = document.createElement('tr');
             const desc = (fila.I || "").toString().toUpperCase();
             const esMP = (fila.H||"").toString().startsWith("***") && desc.startsWith("MERPAGO");
+            const esFD = desc.includes("FIRST DATA");
+            const esCB = desc.includes("CB");
             
             cols.forEach(c => {
                 const td = document.createElement('td');
@@ -374,29 +348,33 @@
                 if(c==='J' || c==='K') {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
+                    
                     if(monto !== 0 && monto !== null) {
-                        td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
+                        // REGLA SOLICITADA: Columna J de First Data hereda color de I
+                        if(c==='J' && esFD) {
+                            td.classList.add('celda-first-data');
+                        } else {
+                            td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
+                        }
                     }
                 }
                 
-                // Colores de fila por descripción
                 if(c==='I'){
                     if(desc.includes("COMI MP")) td.classList.add('celda-comi-mp');
                     if(esMP) td.classList.add('celda-descripcion-mp');
-                    if(desc.includes("FIRST DATA")) td.classList.add('celda-first-data');
-                    if(desc.includes("CB")) td.classList.add('celda-cb');
+                    if(esFD) td.classList.add('celda-first-data');
+                    if(esCB) td.classList.add('celda-cb');
                 }
                 tr.appendChild(td);
             });
 
-            // Columnas Extras
             let neto="-", comi="-", tfd="-";
             if(esMP) {
                 let v = Math.abs(limpiarMonto(fila.J)||0);
                 comi = formatMoney(v/6.099);
                 neto = formatMoney(v - (v/6.099));
             }
-            if(desc.includes("FIRST DATA")) {
+            if(esFD) {
                 let fe = fila.E ? fila.E.toString() : "SF";
                 tfd = formatMoney(totalesFD[fe]);
             }
@@ -415,13 +393,11 @@
         document.getElementById('downloadPdf').style.display = 'flex';
     }
 
-    // --- PDF ---
     document.getElementById('downloadPdf').onclick = () => {
         const element = document.getElementById('reporte-area');
-        html2pdf().set({ margin: 5, filename: 'Reporte.pdf', html2canvas: { scale: 2 }, jsPDF: { orientation: 'landscape' } }).from(element).save();
+        html2pdf().set({ margin: 5, filename: 'Reporte_DBU004.pdf', html2canvas: { scale: 3 }, jsPDF: { orientation: 'landscape' } }).from(element).save();
     };
 
-    // --- CALCULADORA ---
     function toggleCalc() { const c = document.getElementById('calc-container'); c.style.display = (c.style.display==='none'||c.style.display==='')?'block':'none'; }
     function calcInput(v) { document.getElementById('calc-display').value += v; }
     function calcClear() { document.getElementById('calc-display').value = ''; }
@@ -430,11 +406,10 @@
         try { 
             let res = eval(document.getElementById('calc-display').value); 
             document.getElementById('calc-display').value = Number.isInteger(res) ? res : res.toFixed(2);
-        } catch(e) { alert("Error"); calcClear(); } 
+        } catch(e) { document.getElementById('calc-display').value = "Error"; setTimeout(calcClear, 1000); } 
     }
     document.getElementById('close-calc').onclick = toggleCalc;
 
-    // --- DRAG CALC ---
     const calc = document.getElementById("calc-container");
     const header = document.getElementById("calc-header");
     let px=0, py=0, cx=0, cy=0;
