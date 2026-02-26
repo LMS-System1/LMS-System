@@ -19,6 +19,7 @@
             --bordo-claro: #F2E7F4; --bordo-texto: #4A148C; --cb-bg: #F5D0CE; --cb-texto: #721c24;
             --mp-color: #0ea5e9; --mp-bg: #f0f9ff; --match-bg: #dcfce7; --match-text: #166534;
             --no-match: #ffedd5; --no-match-text: #9a3412; --comi-mp: #fef9c3; --comi-mp-text: #854d0e;
+            --interactivo-naranja: #ffedd5; --interactivo-rojo: #fee2e2;
         }
 
         body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--primary); }
@@ -59,13 +60,12 @@
         .saldo-val { display: block; font-size: 2rem; font-weight: 800; }
         .estado-tag { display: inline-flex; align-items: center; padding: 0.25rem 1rem; border-radius: 2rem; color: white; font-size: 0.85rem; font-weight: 700; }
 
-        /* --- MEJORA: FREEZE PANES --- */
         .table-container { 
             background: white; 
             border-radius: 1rem; 
             border: 1px solid var(--border); 
             overflow: auto; 
-            max-height: 70vh; /* Ajusta la altura máxima para que se vea el scroll interno */
+            max-height: 70vh; 
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
         
@@ -77,14 +77,23 @@
             padding: 1rem; 
             text-align: left; 
             white-space: nowrap; 
-            position: sticky; /* Hace que el header sea fijo */
-            top: 0;           /* Lo fija al borde superior del contenedor */
-            z-index: 10;      /* Se asegura que esté por encima de las celdas */
+            position: sticky; 
+            top: 0;           
+            z-index: 10;      
             border-bottom: 2px solid var(--border);
         }
 
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
+        /* --- CLASES DE ESTADO POR CLIC --- */
+        .manual-verde { background-color: var(--match-bg) !important; color: var(--match-text) !important; }
+        .manual-naranja { background-color: var(--no-match) !important; color: var(--no-match-text) !important; }
+        .manual-rojo { background-color: #fee2e2 !important; color: #b91c1c !important; }
+
+        .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
+        .celda-interactiva:hover { filter: brightness(0.95); }
+
+        /* --- CLASES ORIGINALES --- */
         .celda-match { background-color: var(--match-bg) !important; color: var(--match-text) !important; }
         .celda-sin-match { background-color: var(--no-match) !important; color: var(--no-match-text) !important; }
         .celda-comi-mp { background-color: var(--comi-mp) !important; color: var(--comi-mp-text) !important; }
@@ -184,8 +193,7 @@
         <div class="table-container">
             <table>
                 <thead>
-                    <tr id="tableHeader">
-                        </tr>
+                    <tr id="tableHeader"></tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
@@ -214,6 +222,26 @@
     function formatMoney(val) {
         if (val === null || val === undefined || isNaN(val)) return "-";
         return val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // --- LOGICA DE CLIC EN CELDAS ---
+    function rotarColor(e) {
+        const td = e.currentTarget;
+        const estados = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
+        
+        let actual = 0;
+        estados.forEach((cls, idx) => {
+            if (cls !== '' && td.classList.contains(cls)) actual = idx;
+        });
+
+        // Limpiar clases manuales anteriores
+        estados.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
+
+        // Aplicar siguiente clase
+        let siguiente = (actual + 1) % estados.length;
+        if (estados[siguiente] !== '') {
+            td.classList.add(estados[siguiente]);
+        }
     }
 
     async function generarHash(string) {
@@ -346,6 +374,8 @@
                 
                 if ((c === 'J' || c === 'K') && monto !== null) {
                     td.innerText = formatMoney(monto);
+                    td.classList.add('celda-interactiva');
+                    td.onclick = rotarColor;
                 } else {
                     td.innerText = valorOriginal || '';
                 }
@@ -369,13 +399,12 @@
                 tr.appendChild(td);
             });
 
+            // Columnas Extras (Interactuables)
+            let valJ_extra = Math.abs(limpiarMonto(fila.J) || 0);
             let cNeto = "-", cCom = "-";
-            if (esMP_Calculo) {
-                const valJ = Math.abs(limpiarMonto(fila.J) || 0);
-                if (valJ > 0) {
-                    cCom = formatMoney(valJ / 6.099);
-                    cNeto = formatMoney(valJ - (valJ / 6.099));
-                }
+            if (esMP_Calculo && valJ_extra > 0) {
+                cCom = formatMoney(valJ_extra / 6.099);
+                cNeto = formatMoney(valJ_extra - (valJ_extra / 6.099));
             }
 
             let cTotalFD = "-";
@@ -384,14 +413,35 @@
                 let esUltimaFilaDelGrupo = true;
                 for (let next = i + 1; next < rows.length; next++) {
                     const nextDesc = (rows[next].I || "").toString().toUpperCase();
-                    if (nextDesc.includes("FIRST DATA CONO SUR S")) { if ((rows[next].E ? rows[next].E.toString() : "Sin Fecha") === fechaActual) { esUltimaFilaDelGrupo = false; } break; }
+                    if (nextDesc.includes("FIRST DATA CONO SUR S") && (rows[next].E ? rows[next].E.toString() : "Sin Fecha") === fechaActual) { 
+                        esUltimaFilaDelGrupo = false; 
+                        break;
+                    }
                 }
                 if (esUltimaFilaDelGrupo) { 
                     cTotalFD = formatMoney(totalesFD[fechaActual]); 
                     tieneTotal = true; 
                 }
             }
-            tr.innerHTML += `<td class="col-especial">${cNeto}</td><td class="col-especial">${cCom}</td><td class="col-fd-total ${tieneTotal ? 'bg-total-fd' : ''}">${cTotalFD}</td>`;
+
+            const tdNeto = document.createElement('td');
+            tdNeto.className = 'col-especial celda-interactiva';
+            tdNeto.innerText = cNeto;
+            if(cNeto !== "-") tdNeto.onclick = rotarColor;
+            tr.appendChild(tdNeto);
+
+            const tdCom = document.createElement('td');
+            tdCom.className = 'col-especial celda-interactiva';
+            tdCom.innerText = cCom;
+            if(cCom !== "-") tdCom.onclick = rotarColor;
+            tr.appendChild(tdCom);
+
+            const tdTFD = document.createElement('td');
+            tdTFD.className = `col-fd-total celda-interactiva ${tieneTotal ? 'bg-total-fd' : ''}`;
+            tdTFD.innerText = cTotalFD;
+            if(cTotalFD !== "-") tdTFD.onclick = rotarColor;
+            tr.appendChild(tdTFD);
+
             tableBody.appendChild(tr);
         }
         document.getElementById('downloadPdf').style.display = 'flex';
@@ -412,10 +462,25 @@
     dragElement(document.getElementById("calc-container"));
     function dragElement(elmnt) {
         var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        document.getElementById("calc-header").onmousedown = dragMouseDown;
-        function dragMouseDown(e) { e = e || window.event; e.preventDefault(); pos3 = e.clientX; pos4 = e.clientY; document.onmouseup = closeDragElement; document.onmousemove = elementDrag; }
-        function elementDrag(e) { e = e || window.event; e.preventDefault(); pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY; pos3 = e.clientX; pos4 = e.clientY; elmnt.style.top = (elmnt.offsetTop - pos2) + "px"; elmnt.style.left = (elmnt.offsetLeft - pos1) + "px"; elmnt.style.bottom = "auto"; }
-        function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
+        const header = document.getElementById("calc-header");
+        header.onmousedown = function(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = function() { document.onmouseup = null; document.onmousemove = null; };
+            document.onmousemove = function(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+                elmnt.style.bottom = "auto";
+            };
+        };
     }
 </script>
 </body>
