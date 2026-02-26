@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA LMS - CONTROL DBU-004</title>
+    <title>LECTOR DBU-004 - LMS</title>
     
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -21,110 +21,97 @@
             --no-match: #ffedd5; --no-match-text: #9a3412; --comi-mp: #fef9c3; --comi-mp-text: #854d0e;
         }
 
-        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--primary); overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--primary); }
         
-        /* --- ESTILOS LOGIN PREMIUM --- */
-        #login-overlay { 
-            position: fixed; inset: 0; 
-            background: radial-gradient(circle at top right, #1e293b, #0f172a); 
-            z-index: 9999; display: flex; justify-content: center; align-items: center; 
-        }
-        .login-box { 
-            background: rgba(255, 255, 255, 0.95); padding: 2.5rem; border-radius: 1.5rem; 
-            text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); 
-            width: 380px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);
-            animation: fadeIn 0.8s ease-out;
-        }
-        .login-box h2 { margin: 0.5rem 0 0.2rem 0; font-size: 1.6rem; color: var(--primary); }
-        .login-box p { color: var(--neutro); font-size: 0.9rem; margin-bottom: 2rem; }
-        .login-box input { 
-            width: 100%; padding: 0.9rem 1rem; margin: 0.5rem 0; border: 1px solid var(--border); 
-            border-radius: 0.75rem; box-sizing: border-box; background: #f1f5f9; transition: all 0.3s ease;
-        }
-        .login-box input:focus { outline: none; border-color: var(--accent); background: white; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-        .login-box button { 
-            width: 100%; padding: 1rem; margin-top: 1.5rem; background: var(--accent); border: none; 
-            color: white; cursor: pointer; border-radius: 0.75rem; font-weight: 700; transition: 0.3s; 
-        }
-        .login-box button:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        #login-overlay { position: fixed; inset: 0; background: var(--primary); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: white; padding: 2rem; border-radius: 1rem; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); width: 350px; }
+        .login-box h2 { margin-bottom: 1.5rem; font-weight: 700; color: var(--primary); }
+        .login-box input { display: block; width: 100%; padding: 0.75rem; margin: 0.75rem 0; border: 1px solid var(--border); border-radius: 0.5rem; box-sizing: border-box; }
+        .login-box button { width: 100%; padding: 0.75rem; background: var(--accent); border: none; color: white; cursor: pointer; border-radius: 0.5rem; font-weight: 600; transition: 0.3s; }
+        
+        .container { max-width: 1450px; margin: 2rem auto; padding: 0 1.5rem; display: none; }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
-        .container { max-width: 1450px; margin: 2rem auto; padding: 0 1.5rem; display: none; animation: fadeIn 0.5s ease; }
-
-        /* --- BIENVENIDA GRANDE --- */
+        /* NUEVO ESTILO PARA BIENVENIDA GRANDE */
         .welcome-header { 
-            background: white; padding: 2rem; border-radius: 1.5rem; border: 1px solid var(--border);
-            margin-bottom: 1.5rem; display: flex; align-items: center; gap: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            background: white; 
+            padding: 2rem; 
+            border-radius: 1rem; 
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .welcome-header i { color: var(--accent); font-size: 3rem; }
-        .welcome-header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; }
+        .welcome-header i { color: var(--accent); font-size: 2.5rem; }
+        .welcome-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--primary); }
         .welcome-header span { color: var(--accent); text-transform: capitalize; }
-        .welcome-header p { margin: 5px 0 0 0; color: var(--neutro); font-size: 1rem; }
+        .welcome-header p { margin: 5px 0 0 0; color: var(--neutro); font-size: 0.95rem; }
 
-        /* --- TARJETA DE ACCIONES --- */
-        .upload-card { 
-            background: var(--white); padding: 1.5rem 2rem; border-radius: 1.5rem; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 2rem; 
-            display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); 
-        }
+        .upload-card { background: var(--white); padding: 1.5rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
         .brand { display: flex; gap: 12px; align-items: center; }
-        .btn-cargar { 
-            background: var(--accent); color: white; padding: 0.8rem 1.8rem; border-radius: 0.75rem; 
-            border: none; cursor: pointer; font-size: 1rem; font-weight: 700; display: flex; 
-            align-items: center; gap: 10px; transition: 0.3s; 
-        }
-        .btn-cargar:hover { opacity: 0.9; transform: scale(1.02); }
+        .btn-cargar { background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; }
         .btn-cargar.secondary { background: var(--neutro); }
         #upload { display: none; }
 
-        /* --- REPORTES Y TABLAS --- */
-        #historial-area, #reporte-area { display: none; margin-bottom: 2rem; }
+        #historial-area { display: none; margin-bottom: 2rem; animation: fadeIn 0.5s ease; }
+        .historial-card { background: white; border-radius: 1rem; border: 2px solid var(--neutro); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .historial-header { background: var(--neutro); color: white; padding: 0.75rem 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .historial-table { width: 100%; border-collapse: collapse; }
+        .historial-table th { background: #f8fafc; color: var(--neutro); font-size: 0.75rem; text-transform: uppercase; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border); text-align: left; letter-spacing: 0.05em; }
+        .historial-table td { padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600; color: var(--primary); }
+
+        #reporte-area { display: none; animation: fadeIn 0.5s ease; }
         .summary-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
         .info-card { background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .saldo-val { display: block; font-size: 2.2rem; font-weight: 800; margin: 0.5rem 0; }
-        .estado-tag { display: inline-flex; align-items: center; padding: 0.4rem 1.2rem; border-radius: 2rem; color: white; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; }
+        .saldo-val { display: block; font-size: 2rem; font-weight: 800; }
+        .estado-tag { display: inline-flex; align-items: center; padding: 0.25rem 1rem; border-radius: 2rem; color: white; font-size: 0.85rem; font-weight: 700; }
 
-        .table-container { background: white; border-radius: 1rem; border: 1px solid var(--border); overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .table-container { background: white; border-radius: 1rem; border: 1px solid var(--border); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th { background: #f1f5f9; color: var(--neutro); padding: 1.2rem 1rem; text-align: left; font-weight: 700; border-bottom: 2px solid var(--border); }
-        td { padding: 0.9rem 1rem; border-bottom: 1px solid #f1f5f9; }
-
-        /* --- CLASES DE CELDAS --- */
-        .celda-match { background-color: var(--match-bg) !important; color: var(--match-text) !important; font-weight: 600; }
-        .celda-sin-match { background-color: var(--no-match) !important; color: var(--no-match-text) !important; font-weight: 600; }
+        th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; }
+        td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
+        
+        .celda-match { background-color: var(--match-bg) !important; color: var(--match-text) !important; }
+        .celda-sin-match { background-color: var(--no-match) !important; color: var(--no-match-text) !important; }
         .celda-comi-mp { background-color: var(--comi-mp) !important; color: var(--comi-mp-text) !important; }
-        .celda-descripcion-mp { background-color: var(--mp-bg) !important; color: var(--mp-color) !important; border-left: 4px solid var(--mp-color); font-weight: 600; }
-        .col-especial { background-color: #f8fafc; font-weight: 700; color: var(--mp-color); text-align: right; border-left: 1px solid var(--border); }
-        .col-fd-total { font-weight: 800; text-align: right; border-left: 1px solid var(--border); }
+        .celda-descripcion-mp { background-color: var(--mp-bg) !important; color: var(--mp-color) !important; border-left: 4px solid var(--mp-color); }
+        .col-especial { background-color: #f8fafc; font-weight: 700; color: var(--mp-color); border-left: 1px solid var(--border); text-align: right; }
+        .col-fd-total { font-weight: 800; text-align: right; border-left: 1px solid var(--border); color: var(--neutro); }
         .bg-total-fd { background-color: var(--bordo-claro) !important; color: var(--bordo-texto) !important; }
         .celda-first-data { background-color: var(--bordo-claro) !important; color: var(--bordo-texto) !important; }
         .celda-cb { background-color: var(--cb-bg) !important; color: var(--cb-texto) !important; }
 
-        /* --- CALCULADORA --- */
         #calc-container {
-            position: fixed; bottom: 85px; right: 25px; width: 240px;
-            background: #1e293b; border-radius: 12px; box-shadow: 0 20px 25px rgba(0,0,0,0.4);
-            z-index: 10000; padding: 15px; cursor: move; display: none; border: 1px solid #334155;
+            position: fixed; bottom: 80px; right: 25px; width: 220px;
+            background: #1e293b; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 10000; padding: 12px; cursor: move; display: none; border: 1px solid #334155;
         }
-        #calc-header { color: white; font-size: 0.8rem; font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between; }
+        #calc-header { color: white; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        #close-calc { cursor: pointer; color: #94a3b8; font-size: 1.2rem; }
+        #close-calc:hover { color: #ef4444; }
         #calc-display { 
             width: 100%; border: none; background: #0f172a; color: #10b981; 
-            padding: 15px; text-align: right; font-family: monospace; font-size: 1.5rem;
-            border-radius: 8px; margin-bottom: 12px; box-sizing: border-box;
+            padding: 12px; text-align: right; font-family: 'Courier New', monospace; font-size: 1.3rem;
+            border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; outline: none;
         }
-        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .calc-buttons button { padding: 12px; border: none; border-radius: 8px; background: #334155; color: white; cursor: pointer; font-weight: 600; }
+        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .calc-buttons button { 
+            padding: 10px 2px; border: none; border-radius: 6px; background: #334155; 
+            color: white; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s;
+        }
         .calc-buttons button:hover { background: #475569; }
-        .btn-op { background: var(--accent) !important; }
-        .btn-eq { background: var(--positivo) !important; grid-row: span 2; }
-
+        .calc-buttons button:active { transform: scale(0.95); }
+        .btn-op { background: #3b82f6 !important; }
+        .btn-eq { background: #10b981 !important; grid-row: span 2; }
+        
         #open-calc-btn {
-            position: fixed; bottom: 20px; right: 25px; width: 55px; height: 55px;
+            position: fixed; bottom: 20px; right: 25px; width: 50px; height: 50px;
             border-radius: 50%; background: var(--accent); color: white; border: none;
             cursor: pointer; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); z-index: 9999;
-            display: none; align-items: center; justify-content: center; font-size: 1.3rem; transition: 0.3s;
+            display: none; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s;
         }
+        #open-calc-btn:hover { transform: scale(1.1); background: #2563eb; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -133,20 +120,11 @@
 
 <div id="login-overlay">
     <div class="login-box">
-        <div style="background: var(--accent); width: 60px; height: 60px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.2rem; box-shadow: 0 8px 16px rgba(59,130,246,0.3);">
-            <i class="fas fa-file-invoice-dollar" style="color: white; font-size: 1.8rem;"></i>
-        </div>
-        <h2>LMS Finanzas</h2>
-        <p>Control Interno DBU-004</p>
-        
-        <input type="text" id="user" placeholder="Nombre de usuario" spellcheck="false">
+        <i class="fas fa-user-shield fa-3x" style="color: var(--accent); margin-bottom: 1rem;"></i>
+        <h2>Sistema LMS</h2>
+        <input type="text" id="user" placeholder="Usuario">
         <input type="password" id="pass" placeholder="Contraseña">
-        
-        <button id="btnLogin">Iniciar Sesión</button>
-        
-        <div style="margin-top: 1.8rem; font-size: 0.7rem; color: #94a3b8; letter-spacing: 0.5px;">
-            <i class="fas fa-lock"></i> ACCESO RESTRINGIDO A PERSONAL AUTORIZADO
-        </div>
+        <button id="btnLogin">Ingresar al Sistema</button>
     </div>
 </div>
 
@@ -155,47 +133,37 @@
     <div class="welcome-header">
         <i class="fas fa-user-circle"></i>
         <div>
-            <h1>Bienvenido, <span id="user-display">Usuario</span></h1>
-            <p><i class="far fa-calendar-alt"></i> Panel de Gestión DBU-004 LMS | Sesión Activa</p>
+            <h1>Bienvenido, <span id="user-display"></span></h1>
+            <p>Sistema de Gestión Lector DBU-004 LMS</p>
         </div>
     </div>
 
     <div class="upload-card">
         <div class="brand">
             <button class="btn-cargar" onclick="abrirSelector(false)">
-                <i class="fas fa-plus-circle"></i> Nueva Conciliación DBU-004
+                <i class="fas fa-credit-card"></i> Lector DBU-004
             </button>
             <button class="btn-cargar secondary" onclick="abrirSelector(true)">
-                <i class="fas fa-search"></i> Buscar Último en "0"
+                <i class="fas fa-history"></i> Ult. vez en "0"
             </button>
             <input type="file" id="upload" accept=".xlsx, .xls" />
         </div>
-        <button id="downloadPdf" style="background: #dc2626; color: white; padding: 0.7rem 1.4rem; border: none; border-radius: 0.75rem; cursor: pointer; font-weight: 700; display: none; align-items: center; gap: 8px; transition: 0.3s;">
-            <i class="fas fa-file-pdf"></i> Descargar Informe PDF
+        <button id="downloadPdf" class="btn-pdf" style="background: #dc2626; color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; display: none; align-items: center; gap: 8px;">
+            <i class="fas fa-file-pdf"></i> Exportar a PDF
         </button>
     </div>
 
     <div id="historial-area">
-        <div style="background: white; border-radius: 1rem; border: 2px solid var(--neutro); overflow: hidden;">
-            <div style="background: var(--neutro); color: white; padding: 1rem 1.5rem; font-weight: 700;">
-                <i class="fas fa-info-circle"></i> Último Balance Cerrado ($0,00)
+        <div class="historial-card">
+            <div class="historial-header">
+                <i class="fas fa-search-dollar"></i> Resultado de búsqueda: Último balance en $0,00
             </div>
-            <table style="width: 100%; border-collapse: collapse;">
+            <table class="historial-table">
                 <thead>
-                    <tr style="background: #f8fafc;">
-                        <th style="padding: 1rem;">BANCO / INFO</th>
-                        <th>LIDER</th>
-                        <th>UNIDAD</th>
-                        <th>FECHA</th>
-                    </tr>
+                    <tr><th>BANCO / INFO</th><th>LIDER</th><th>UNIDAD</th><th>FECHA</th></tr>
                 </thead>
                 <tbody id="historialBody">
-                    <tr style="font-size: 1.1rem; font-weight: 600;">
-                        <td id="h-colC" style="padding: 1.2rem;">-</td>
-                        <td id="h-colD">-</td>
-                        <td id="h-colB">-</td>
-                        <td id="h-colE">-</td>
-                    </tr>
+                    <tr><td id="h-colC">-</td><td id="h-colD">-</td><td id="h-colB">-</td><td id="h-colE">-</td></tr>
                 </tbody>
             </table>
         </div>
@@ -204,30 +172,27 @@
     <div id="reporte-area">
         <div class="summary-grid">
             <div class="info-card">
-                <div style="display: flex; gap: 4rem;">
-                    <div><h4 style="margin: 0; color: var(--neutro); font-size: 0.8rem;">UNIDAD</h4><p id="unidadNombre" style="margin: 5px 0 0 0; font-weight: 700; font-size: 1.2rem;">-</p></div>
-                    <div><h4 style="margin: 0; color: var(--neutro); font-size: 0.8rem;">LÍDER DE CUENTA</h4><p id="liderNombre" style="margin: 5px 0 0 0; font-weight: 700; font-size: 1.2rem;">-</p></div>
+                <div style="display: flex; gap: 3rem;">
+                    <div class="info-group"><h4>Unidad</h4><p id="unidadNombre">-</p></div>
+                    <div class="info-group"><h4>Líder de Cuenta</h4><p id="liderNombre">-</p></div>
                 </div>
             </div>
-            <div class="info-card" style="border-top: 5px solid var(--accent); flex-direction: column; align-items: flex-start;">
-                <h4 style="margin: 0; color: var(--neutro); font-size: 0.8rem;">BALANCE FINAL DE CARTERA</h4>
-                <span id="saldoFinal" class="saldo-val">$0,00</span>
-                <div id="estadoTexto" class="estado-tag">Cargando...</div>
+            <div class="info-card" style="border-top: 4px solid var(--accent);">
+                <div class="saldo-display" style="width: 100%;">
+                    <h4>Balance Final</h4>
+                    <span id="saldoFinal" class="saldo-val">$0,00</span>
+                    <div id="estadoTexto" class="estado-tag">Cargando...</div>
+                </div>
             </div>
         </div>
         <div class="table-container">
-            <table id="tablaPrincipal">
-                <thead><tr id="tableHeader"></tr></thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+            <table><thead><tr id="tableHeader"></tr></thead><tbody id="tableBody"></tbody></table>
         </div>
     </div>
 </div>
 
-<button id="open-calc-btn" onclick="toggleCalc()"><i class="fas fa-calculator"></i></button>
-
 <div id="calc-container">
-    <div id="calc-header"><span><i class="fas fa-calculator"></i> CALCULADORA</span><span id="close-calc" style="cursor:pointer">×</span></div>
+    <div id="calc-header"><span><i class="fas fa-calculator"></i> CALCULADORA</span><span id="close-calc">×</span></div>
     <input type="text" id="calc-display" readonly placeholder="0">
     <div class="calc-buttons">
         <button onclick="calcClear()" style="color: #ef4444;">C</button>
@@ -239,14 +204,16 @@
     </div>
 </div>
 
+<button id="open-calc-btn" onclick="toggleCalc()"><i class="fas fa-calculator"></i></button>
+
 <script>
     let modoBusquedaCero = false;
 
-    // --- SEGURIDAD ---
     async function generarHash(string) {
         const msgUint8 = new TextEncoder().encode(string);
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     async function validarLogin() {
@@ -256,36 +223,19 @@
 
         if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u] === hashIngresado) {
             document.getElementById('user-display').innerText = u;
-            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('login-overlay').remove();
             document.getElementById('main-content').style.display = 'block';
             document.getElementById('open-calc-btn').style.display = 'flex';
-        } else { alert("Usuario o contraseña incorrectos."); }
+        } else { alert("Credenciales incorrectas."); }
     }
 
     document.getElementById('btnLogin').addEventListener('click', validarLogin);
     document.getElementById('pass').addEventListener('keypress', (e) => { if(e.key === 'Enter') validarLogin(); });
 
-    // --- LÓGICA DE NEGOCIO ---
-    function abrirSelector(esModoBusqueda) {
-        modoBusquedaCero = esModoBusqueda;
-        document.getElementById('upload').click();
-    }
-
-    function limpiarMonto(valor) {
-        if (valor === undefined || valor === null || valor === "") return null;
-        if (typeof valor === 'number') return valor;
-        let s = valor.toString().trim();
-        if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
-        else if (s.includes(',')) s = s.replace(',', '.');
-        let num = parseFloat(s.replace(/[^0-9.-]/g, ''));
-        return isNaN(num) ? null : num;
-    }
-
-    function excelDateToJS(serial) {
-        if (typeof serial === 'number') return new Date(Math.round((serial - 25569) * 86400 * 1000));
-        let d = new Date(serial);
-        return isNaN(d.getTime()) ? new Date(0) : d;
-    }
+    // --- Lógica de archivos y negocio (abreviada para ahorrar espacio, pero igual a la anterior) ---
+    function abrirSelector(esModoBusqueda) { modoBusquedaCero = esModoBusqueda; document.getElementById('upload').click(); }
+    function limpiarMonto(valor) { if (valor === undefined || valor === null || valor === "") return null; if (typeof valor === 'number') return valor; let s = valor.toString().trim(); if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.'); else if (s.includes(',')) s = s.replace(',', '.'); let num = parseFloat(s.replace(/[^0-9.-]/g, '')); return isNaN(num) ? null : num; }
+    function excelDateToJS(serial) { if (typeof serial === 'number') return new Date(Math.round((serial - 25569) * 86400 * 1000)); let d = new Date(serial); return isNaN(d.getTime()) ? new Date(0) : d; }
 
     document.getElementById('upload').addEventListener('change', function(e) {
         const file = e.target.files[0];
@@ -295,10 +245,7 @@
             const data = new Uint8Array(event.target.result);
             const workbook = XLSX.read(data, {type: 'array', cellDates: true});
             const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: "A", defval: ""});
-            if(rows.length > 0) {
-                if (modoBusquedaCero) { procesarUltimoCero(rows); } 
-                else { generarReporte(rows); }
-            }
+            if(rows.length > 0) { if (modoBusquedaCero) { procesarUltimoCero(rows); } else { generarReporte(rows); } }
             e.target.value = '';
         };
         reader.readAsArrayBuffer(file);
@@ -319,33 +266,22 @@
                 encontrado = true; break;
             }
         }
-        if (!encontrado) alert("No se encontró ningún balance en '0' en el archivo.");
+        if (!encontrado) { alert("No se encontró ningún valor '0' en la columna L."); document.getElementById('historial-area').style.display = 'none'; }
     }
 
     function generarReporte(rows) {
         document.getElementById('historial-area').style.display = 'none';
         document.getElementById('reporte-area').style.display = 'block';
         document.getElementById('unidadNombre').innerText = rows[1]?.B || "Desconocida";
-        
-        let lider = "No encontrado";
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i].C && rows[i].C.toString().toUpperCase().includes("HSBC")) {
-                lider = rows[i].D || "Sin nombre"; break;
-            }
-        }
-        document.getElementById('liderNombre').innerText = lider;
-
-        const saldoFinal = limpiarMonto(rows[rows.length - 1]?.L) || 0;
-        const saldoDisp = document.getElementById('saldoFinal');
+        let liderEncontrado = "No encontrado";
+        for (let i = 0; i < rows.length; i++) { if (rows[i].C && rows[i].C.toString().toUpperCase().includes("HSBC")) { liderEncontrado = rows[i].D || "Sin nombre"; break; } }
+        document.getElementById('liderNombre').innerText = liderEncontrado;
+        const saldoNumerico = limpiarMonto(rows[rows.length - 1]?.L) || 0;
         const estadoTag = document.getElementById('estadoTexto');
-        
-        saldoDisp.innerText = "$" + saldoFinal.toLocaleString('es-AR', {minimumFractionDigits: 2});
-        saldoDisp.style.color = saldoFinal < 0 ? 'var(--negativo)' : (saldoFinal > 0 ? 'var(--positivo)' : 'var(--primary)');
-        
-        estadoTag.style.backgroundColor = saldoFinal < 0 ? 'var(--negativo)' : (saldoFinal > 0 ? 'var(--positivo)' : 'var(--neutro)');
-        estadoTag.innerText = saldoFinal < 0 ? "SOBRE REPORTADO" : (saldoFinal > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
+        document.getElementById('saldoFinal').innerText = "$" + saldoNumerico.toLocaleString('es-AR', {minimumFractionDigits: 2});
+        estadoTag.style.backgroundColor = saldoNumerico < 0 ? 'var(--negativo)' : (saldoNumerico > 0 ? 'var(--positivo)' : 'var(--neutro)');
+        estadoTag.innerText = saldoNumerico < 0 ? "SOBRE REPORTADO" : (saldoNumerico > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
 
-        // Conciliación J vs K
         let conciliadosJ = new Set(), conciliadosK = new Set();
         for (let i = 1; i < rows.length; i++) {
             let mK = limpiarMonto(rows[i].K) || 0;
@@ -361,110 +297,101 @@
 
         const totalesFD = {};
         rows.forEach(fila => {
-            if ((fila.I || "").toString().toUpperCase().includes("FIRST DATA CONO SUR S")) {
-                const f = fila.E ? fila.E.toString() : "Sin Fecha";
-                totalesFD[f] = (totalesFD[f] || 0) + (limpiarMonto(fila.J) || 0);
+            const desc = (fila.I || "").toString().toUpperCase();
+            if (desc.includes("FIRST DATA CONO SUR S")) {
+                const fecha = fila.E ? fila.E.toString() : "Sin Fecha";
+                totalesFD[fecha] = (totalesFD[fecha] || 0) + (limpiarMonto(fila.J) || 0);
             }
         });
 
-        const cols = ['E', 'F', 'G', 'H', 'I', 'J', 'K'];
-        const header = document.getElementById('tableHeader');
-        header.innerHTML = '';
-        cols.forEach(c => { header.innerHTML += `<th>${rows[0][c] || c}</th>`; });
-        header.innerHTML += '<th>Neto</th><th>Comisión MP</th><th>TOTAL FIRST DATA</th>';
+        const colsVista = ['E', 'F', 'G', 'H', 'I', 'J', 'K'];
+        const headerRow = document.getElementById('tableHeader');
+        headerRow.innerHTML = '';
+        colsVista.forEach(c => { const th = document.createElement('th'); th.innerText = rows[0][c] || c; headerRow.appendChild(th); });
+        headerRow.innerHTML += '<th>Neto</th><th>Comisión MP</th><th>TOTAL FIRST DATA</th>';
 
-        const body = document.getElementById('tableBody');
-        body.innerHTML = '';
+        const tableBody = document.getElementById('tableBody');
+        tableBody.innerHTML = '';
 
         for (let i = 1; i < rows.length; i++) {
             const fila = rows[i];
             if (!fila.E && !fila.I) continue;
             const tr = document.createElement('tr');
-            const desc = (fila.I || "").toString().toUpperCase();
-            const fecha = fila.E ? fila.E.toString() : "Sin Fecha";
-            const esMP = (fila.H || "").toString().startsWith("***") && desc.startsWith("MERPAGO");
-            const esComiMP = desc.includes("COMI MP");
-            const esFD = desc.includes("FIRST DATA CONO SUR S");
-            const esCB = desc.includes("CB");
+            const descI = (fila.I || "").toString().toUpperCase();
+            const fechaActual = fila.E ? fila.E.toString() : "Sin Fecha";
+            const esMP_Calculo = (fila.H || "").toString().startsWith("***") && descI.startsWith("MERPAGO");
+            const esComiMP = descI.includes("COMI MP");
+            const esFirstData = descI.includes("FIRST DATA CONO SUR S");
+            const esCB = descI.includes("CB");
 
-            cols.forEach(c => {
+            colsVista.forEach(c => {
                 const td = document.createElement('td');
                 td.innerText = fila[c] || '';
-                let val = limpiarMonto(fila[c]) || 0;
+                let monto = limpiarMonto(fila[c]) || 0;
                 if (c === 'I') {
                     if (esComiMP) td.classList.add('celda-comi-mp');
-                    else if (esMP) td.classList.add('celda-descripcion-mp');
-                    else if (esFD) td.classList.add('celda-first-data');
+                    else if (esMP_Calculo) td.classList.add('celda-descripcion-mp');
+                    else if (esFirstData) td.classList.add('celda-first-data');
                     else if (esCB) td.classList.add('celda-cb');
-                } else if (c === 'J') {
+                } 
+                else if (c === 'J') {
                     if (esCB) td.classList.add('celda-cb');
-                    else if (esFD) td.classList.add('celda-first-data');
-                    else if (val !== 0) td.classList.add(conciliadosJ.has(i) ? 'celda-match' : 'celda-sin-match');
-                } else if (c === 'K') {
+                    else if (esFirstData) td.classList.add('celda-first-data');
+                    else if (monto !== 0) td.classList.add(conciliadosJ.has(i) ? 'celda-match' : 'celda-sin-match');
+                } 
+                else if (c === 'K') {
                     if (esComiMP) td.classList.add('celda-comi-mp');
                     else if (esCB) td.classList.add('celda-cb');
-                    else if (val !== 0) td.classList.add(conciliadosK.has(i) ? 'celda-match' : 'celda-sin-match');
+                    else if (monto !== 0) td.classList.add(conciliadosK.has(i) ? 'celda-match' : 'celda-sin-match');
                 }
                 tr.appendChild(td);
             });
 
-            // Cálculos dinámicos MP
             let cNeto = "-", cCom = "-";
-            if (esMP) {
+            if (esMP_Calculo) {
                 const valJ = Math.abs(limpiarMonto(fila.J) || 0);
                 if (valJ > 0) {
-                    cCom = (valJ / 1.0699).toLocaleString('es-AR', {minimumFractionDigits: 2});
-                    cNeto = (valJ - (valJ / 1.0699)).toLocaleString('es-AR', {minimumFractionDigits: 2});
+                    cCom = (valJ / 1.0699).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    cNeto = (valJ - (valJ / 1.0699)).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 }
             }
 
-            // Agrupación First Data
-            let cFD = "-"; let tFD = false;
-            if (esFD) {
-                let esUltima = true;
-                for (let n = i + 1; n < rows.length; n++) {
-                    if ((rows[n].I || "").toString().toUpperCase().includes("FIRST DATA CONO SUR S")) {
-                        if ((rows[n].E ? rows[n].E.toString() : "Sin Fecha") === fecha) esUltima = false;
-                        break;
-                    }
+            let cTotalFD = "-";
+            let tieneTotal = false;
+            if (esFirstData) {
+                let esUltimaFilaDelGrupo = true;
+                for (let next = i + 1; next < rows.length; next++) {
+                    const nextDesc = (rows[next].I || "").toString().toUpperCase();
+                    if (nextDesc.includes("FIRST DATA CONO SUR S")) { if ((rows[next].E ? rows[next].E.toString() : "Sin Fecha") === fechaActual) { esUltimaFilaDelGrupo = false; } break; }
                 }
-                if (esUltima) { cFD = totalesFD[fecha].toLocaleString('es-AR', {minimumFractionDigits: 2}); tFD = true; }
+                if (esUltimaFilaDelGrupo) { cTotalFD = totalesFD[fechaActual].toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}); tieneTotal = true; }
             }
-            tr.innerHTML += `<td class="col-especial">${cNeto}</td><td class="col-especial">${cCom}</td><td class="col-fd-total ${tFD ? 'bg-total-fd' : ''}">${cFD}</td>`;
-            body.appendChild(tr);
+            tr.innerHTML += `<td class="col-especial">${cNeto}</td><td class="col-especial">${cCom}</td><td class="col-fd-total ${tieneTotal ? 'bg-total-fd' : ''}">${cTotalFD}</td>`;
+            tableBody.appendChild(tr);
         }
         document.getElementById('downloadPdf').style.display = 'flex';
     }
 
-    // PDF y Calculadora (Igual a versiones anteriores)
     document.getElementById('downloadPdf').addEventListener('click', function() {
-        html2pdf().set({ margin: 5, filename: 'Reporte_LMS.pdf', html2canvas: { scale: 3 }, jsPDF: { orientation: 'landscape' } }).from(document.getElementById('reporte-area')).save();
+        html2pdf().set({ margin: 5, filename: 'Reporte_DBU004.pdf', html2canvas: { scale: 3 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } }).from(document.getElementById('reporte-area')).save();
     });
 
-    function toggleCalc() { const c = document.getElementById('calc-container'); c.style.display = (c.style.display === 'none' || c.style.display === '') ? 'block' : 'none'; }
+    function toggleCalc() { const calc = document.getElementById('calc-container'); calc.style.display = (calc.style.display === 'none' || calc.style.display === '') ? 'block' : 'none'; }
     document.getElementById('close-calc').onclick = toggleCalc;
-    let d = document.getElementById('calc-display');
-    function calcInput(v) { d.value += v; }
-    function calcClear() { d.value = ''; }
-    function calcBackspace() { d.value = d.value.slice(0, -1); }
-    function calcResult() { try { let r = eval(d.value); d.value = Number.isInteger(r) ? r : r.toFixed(2); } catch(e) { d.value = "Error"; setTimeout(calcClear, 1000); } }
+    let calcDisp = document.getElementById('calc-display');
+    function calcInput(v) { calcDisp.value += v; }
+    function calcClear() { calcDisp.value = ''; }
+    function calcBackspace() { calcDisp.value = calcDisp.value.slice(0, -1); }
+    function calcResult() { try { let res = eval(calcDisp.value); calcDisp.value = Number.isInteger(res) ? res : res.toFixed(2); } catch(e) { calcDisp.value = "Error"; setTimeout(calcClear, 1000); } }
 
     dragElement(document.getElementById("calc-container"));
     function dragElement(elmnt) {
-        var p1 = 0, p2 = 0, p3 = 0, p4 = 0;
-        document.getElementById("calc-header").onmousedown = (e) => {
-            e.preventDefault(); p3 = e.clientX; p4 = e.clientY;
-            document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
-            document.onmousemove = (e) => {
-                p1 = p3 - e.clientX; p2 = p4 - e.clientY; p3 = e.clientX; p4 = e.clientY;
-                elmnt.style.top = (elmnt.offsetTop - p2) + "px"; elmnt.style.left = (elmnt.offsetLeft - p1) + "px";
-                elmnt.style.bottom = "auto";
-            };
-        };
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        document.getElementById("calc-header").onmousedown = dragMouseDown;
+        function dragMouseDown(e) { e = e || window.event; e.preventDefault(); pos3 = e.clientX; pos4 = e.clientY; document.onmouseup = closeDragElement; document.onmousemove = elementDrag; }
+        function elementDrag(e) { e = e || window.event; e.preventDefault(); pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY; pos3 = e.clientX; pos4 = e.clientY; elmnt.style.top = (elmnt.offsetTop - pos2) + "px"; elmnt.style.left = (elmnt.offsetLeft - pos1) + "px"; elmnt.style.bottom = "auto"; }
+        function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
     }
 </script>
 </body>
 </html>
-
-
-
