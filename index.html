@@ -201,7 +201,7 @@
     }
 
     function rotarColor(e) {
-        if (isLocked) return; // Si está bloqueado, no hace nada
+        if (isLocked) return;
 
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
@@ -387,9 +387,9 @@
                 const td = document.createElement('td');
                 td.innerText = v;
                 td.classList.add('celda-interactiva');
+                td.onclick = rotarColor; // Habilitado siempre el evento, filtrado por isLocked
                 
                 if (v !== "-") {
-                    td.onclick = rotarColor;
                     if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
                     if (idx === 2) td.classList.add('bg-total-fd');
                 }
