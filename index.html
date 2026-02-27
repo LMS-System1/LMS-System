@@ -58,10 +58,10 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* Prioridad máxima para estados manuales mediante !important */
-        .manual-verde { background-color: #22c55e !important; color: white !important; }
-        .manual-naranja { background-color: #f59e0b !important; color: white !important; }
-        .manual-rojo { background-color: #ef4444 !important; color: white !important; }
+        /* Prioridad absoluta para colores manuales */
+        .manual-verde { background-color: #22c55e !important; color: white !important; border-left: none !important; }
+        .manual-naranja { background-color: #f59e0b !important; color: white !important; border-left: none !important; }
+        .manual-rojo { background-color: #ef4444 !important; color: white !important; border-left: none !important; }
 
         .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
         .celda-interactiva:hover { filter: brightness(0.9); }
@@ -329,13 +329,13 @@
                 let monto = limpiarMonto(fila[c]);
                 td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
                 
-                // Aplicar interactividad a partir de la columna Descripción ('I') o si son J/K
+                // Interactividad para I, J, K (Descripción, tarjeta y declarada)
                 if(c==='I' || c==='J' || c==='K') {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
                 }
 
-                // Lógica de colores por defecto
+                // Colores lógicos de base
                 if(c==='J' || c==='K') {
                     if(monto !== 0 && monto !== null) {
                         if(c==='J' && esFD) {
@@ -372,17 +372,18 @@
                 }
             }
 
+            // Columnas finales calculadas
             [neto, comi, tfd].forEach((v, idx) => {
                 const td = document.createElement('td');
                 td.innerText = v;
-                // Siempre interactiva para las columnas especiales
+                // Siempre interactivas
                 td.classList.add('celda-interactiva');
                 td.onclick = rotarColor;
                 
-                if (v !== "-") {
-                    if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
-                    if (idx === 2) td.classList.add('bg-total-fd');
-                }
+                // Estilos base de MP o FD
+                if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
+                if (idx === 2) td.classList.add('bg-total-fd');
+                
                 tr.appendChild(td);
             });
 
