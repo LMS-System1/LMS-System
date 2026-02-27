@@ -301,9 +301,26 @@
             }
         }
 
+        // --- LÓGICA DE ACUMULACIÓN DINÁMICA ---
         const totalesFD = {};
+        const bancosCB = new Set();
+
+        // 1ra pasada: Identificar bancos vinculados a "CB"
         rows.forEach(f => {
-            if((f.I||"").includes("FIRST DATA")) {
+            const desc = (f.I || "").toString().toUpperCase();
+            if (desc.includes(" - CB ")) {
+                const partes = desc.split(" - CB ");
+                if (partes.length > 1) bancosCB.add(partes[1].trim());
+            }
+        });
+
+        // 2da pasada: Acumular totales para First Data y bancos CB
+        rows.forEach(f => {
+            const desc = (f.I || "").toString().toUpperCase();
+            const esFD = desc.includes("FIRST DATA");
+            const esBancoCB = Array.from(bancosCB).some(b => desc === b);
+
+            if (esFD || esBancoCB) {
                 let fe = f.E ? f.E.toString() : "SF";
                 totalesFD[fe] = (totalesFD[fe]||0) + (limpiarMonto(f.J)||0);
             }
@@ -324,8 +341,11 @@
             const tr = document.createElement('tr');
             const desc = (fila.I || "").toString().toUpperCase();
             const esMP = (fila.H||"").toString().startsWith("***") && desc.startsWith("MERPAGO");
+            
+            // Identificación para visualización
             const esFD = desc.includes("FIRST DATA");
-            const esCB = desc.includes("CB");
+            const esBancarioCB = Array.from(bancosCB).some(b => desc === b);
+            const esCeldaCabeceraCB = desc.includes(" - CB ");
             
             cols.forEach(c => {
                 const td = document.createElement('td');
@@ -339,7 +359,7 @@
 
                 if(c==='J' || c==='K') {
                     if(monto !== 0 && monto !== null) {
-                        if(c==='J' && esFD) {
+                        if(c==='J' && (esFD || esBancarioCB)) {
                             td.classList.add('celda-first-data');
                         } else {
                             td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
@@ -350,25 +370,23 @@
                 if(c==='I'){
                     if(desc.includes("COMI MP")) td.classList.add('celda-comi-mp');
                     if(esMP) td.classList.add('celda-descripcion-mp');
-                    if(esFD) td.classList.add('celda-first-data');
-                    if(esCB) td.classList.add('celda-cb');
+                    if(esFD || esBancarioCB) td.classList.add('celda-first-data');
+                    if(esCeldaCabeceraCB) td.classList.add('celda-cb');
                 }
                 tr.appendChild(td);
             });
 
-            // Columnas extras corregidas con lógica de fechas según tu pedido
+            // Columnas extras
             let nVal = "-", cVal = "-", tVal = "-";
             if(esMP) {
                 let v = Math.abs(limpiarMonto(fila.J)||0);
                 if (v > 0) {
                     let fechaFila = excelDateToJS(fila.E);
-                    let divisor = 1.0699; // Valor por defecto: desde el 1 de febrero 2025 en adelante
+                    let divisor = 1.0699; 
 
                     if (fechaFila >= new Date(2024, 2, 1) && fechaFila <= new Date(2024, 8, 30)) {
-                        // Desde el 1 de Marzo de 2024 hasta el 30 de septiembre 2024
                         divisor = 1.0899;
                     } else if (fechaFila > new Date(2024, 8, 30) && fechaFila < new Date(2025, 1, 1)) {
-                        // Desde el 1 de Octubre de 2024 hasta el 31 de enero de 2025
                         divisor = 1.0799;
                     }
 
@@ -376,7 +394,9 @@
                     cVal = formatMoney(v - (v / divisor));
                 }
             }
-            if(esFD) {
+            
+            // Lógica de acumulado en la última columna
+            if(esFD || esBancarioCB) {
                 let fe = fila.E ? fila.E.toString() : "SF";
                 if (fe !== (rows[i + 1]?.E?.toString() || null)) tVal = formatMoney(totalesFD[fe]);
             }
