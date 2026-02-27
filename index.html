@@ -58,7 +58,6 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* --- ESTADOS MANUALES --- */
         .manual-verde { background-color: #22c55e !important; color: white !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; }
@@ -66,7 +65,6 @@
         .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
         .celda-interactiva:hover { filter: brightness(0.9); }
 
-        /* --- CLASES DE LOGICA --- */
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
         .celda-comi-mp { background-color: var(--comi-mp) !important; color: var(--comi-mp-text) !important; }
@@ -125,13 +123,6 @@
         <button id="downloadPdf" class="btn-cargar" style="background: #dc2626; display: none;">
             <i class="fas fa-file-pdf"></i> Exportar a PDF
         </button>
-    </div>
-
-    <div id="historial-area" style="display:none; margin-bottom: 2rem;">
-        <div class="info-card">
-            <h3>Resultado: Último Balance en $0,00</h3>
-            <p id="h-info" style="font-weight: bold;"></p>
-        </div>
     </div>
 
     <div id="reporte-area">
@@ -199,14 +190,11 @@
     function rotarColor(e) {
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
-
         let actualIdx = 0;
         estadosManuales.forEach((cls, idx) => {
             if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
         });
-
         estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
-
         let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
         if (estadosManuales[siguienteIdx] !== '') {
             td.classList.add(estadosManuales[siguienteIdx]);
@@ -343,7 +331,6 @@
                 if(c==='J' || c==='K') {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
-                    
                     if(monto !== 0 && monto !== null) {
                         if(c==='J' && esFD) {
                             td.classList.add('celda-first-data');
@@ -370,7 +357,15 @@
             }
             if(esFD) {
                 let fe = fila.E ? fila.E.toString() : "SF";
-                tfd = formatMoney(totalesFD[fe]);
+                // Lógica añadida: mostrar solo en la última fila del grupo de fechas
+                let siguienteFila = rows[i + 1];
+                let fechaSiguiente = siguienteFila && siguienteFila.E ? siguienteFila.E.toString() : null;
+                
+                if (fe !== fechaSiguiente) {
+                    tfd = formatMoney(totalesFD[fe]);
+                } else {
+                    tfd = "-";
+                }
             }
 
             [neto, comi, tfd].forEach((v, idx) => {
