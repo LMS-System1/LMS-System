@@ -47,7 +47,8 @@
         #upload { display: none; }
 
         #search-zero-area { margin-bottom: 1.5rem; display: none; animation: fadeIn 0.4s ease; }
-        .search-table { width: 100%; background: white; border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-collapse: collapse; }
+        .search-table { width: 100%; background: white; border-collapse: collapse; }
+        .search-table th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; font-size: 0.85rem; border-bottom: 2px solid var(--border); }
         .search-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
         #reporte-area { display: none; animation: fadeIn 0.5s ease; }
@@ -135,9 +136,19 @@
     </div>
 
     <div id="search-zero-area">
-        <table class="search-table">
-            <tbody id="search-zero-body"></tbody>
-        </table>
+        <div class="table-container" style="max-height: none; margin-bottom: 2rem;">
+            <table class="search-table">
+                <thead>
+                    <tr>
+                        <th>Banco</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="search-zero-body"></tbody>
+            </table>
+        </div>
     </div>
 
     <div id="reporte-area">
@@ -293,22 +304,26 @@
         const body = document.getElementById('search-zero-body');
         body.innerHTML = '';
         
-        // Términos a eliminar en el campo Líder
-        const terminosAEliminar = ["Desembolso", "Transferencia de fondos", "Ajuste de desembolso", "Balance"];
-
         for (let i = rows.length - 1; i >= 1; i--) {
             if (limpiarMonto(rows[i].L) === 0 && rows[i].L !== "") {
                 
-                let liderLimpio = rows[i].D || "";
-                terminosAEliminar.forEach(termino => {
-                    const regex = new RegExp(termino, "gi");
-                    liderLimpio = liderLimpio.replace(regex, "");
-                });
-                liderLimpio = liderLimpio.trim();
+                let tipoReal = rows[i].D || "N/A";
+                let banco = rows[i].C || "N/A";
+                let fecha = rows[i].E || "N/A";
 
-                body.innerHTML = `<tr><td>Banco: ${rows[i].C}</td><td>Líder: ${liderLimpio}</td><td>Fecha: ${rows[i].E}</td><td style="color:var(--positivo)">Último $0 encontrado</td></tr>`;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${banco}</td>
+                    <td style="font-weight:600; color:var(--accent)">${tipoReal}</td>
+                    <td>${fecha}</td>
+                    <td><span class="estado-tag" style="background:var(--positivo)">Último $0 encontrado</span></td>
+                `;
+                body.appendChild(tr);
+                
                 document.getElementById('search-zero-area').style.display = 'block';
-                encontrado = true; break;
+                document.getElementById('reporte-area').style.display = 'none'; // Ocultar reporte si existe
+                encontrado = true; 
+                break;
             }
         }
         if (!encontrado) alert("No se halló balance en 0.");
