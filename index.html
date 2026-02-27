@@ -61,7 +61,6 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* ESTILOS DE COLOREO MANUAL CON PRIORIDAD MÁXIMA */
         .manual-verde { background-color: #22c55e !important; color: white !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; }
@@ -204,7 +203,6 @@
         return val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    // FUNCIÓN DE ROTAR COLOR CORREGIDA
     function rotarColor(e) {
         if (coloreoBloqueado) return;
         const td = e.currentTarget;
@@ -215,10 +213,8 @@
             if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
         });
 
-        // Limpiar clases manuales anteriores
         estados.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
 
-        // Aplicar siguiente clase
         let siguienteIdx = (actualIdx + 1) % estados.length;
         if (estados[siguienteIdx] !== '') {
             td.classList.add(estados[siguienteIdx]);
@@ -296,9 +292,21 @@
         let encontrado = false;
         const body = document.getElementById('search-zero-body');
         body.innerHTML = '';
+        
+        // Términos a eliminar en el campo Líder
+        const terminosAEliminar = ["Desembolso", "Transferencia de fondos", "Ajuste de desembolso", "Balance"];
+
         for (let i = rows.length - 1; i >= 1; i--) {
             if (limpiarMonto(rows[i].L) === 0 && rows[i].L !== "") {
-                body.innerHTML = `<tr><td>Banco: ${rows[i].C}</td><td>Líder: ${rows[i].D}</td><td>Fecha: ${rows[i].E}</td><td style="color:var(--positivo)">Último $0 encontrado</td></tr>`;
+                
+                let liderLimpio = rows[i].D || "";
+                terminosAEliminar.forEach(termino => {
+                    const regex = new RegExp(termino, "gi");
+                    liderLimpio = liderLimpio.replace(regex, "");
+                });
+                liderLimpio = liderLimpio.trim();
+
+                body.innerHTML = `<tr><td>Banco: ${rows[i].C}</td><td>Líder: ${liderLimpio}</td><td>Fecha: ${rows[i].E}</td><td style="color:var(--positivo)">Último $0 encontrado</td></tr>`;
                 document.getElementById('search-zero-area').style.display = 'block';
                 encontrado = true; break;
             }
@@ -374,7 +382,6 @@
                 let monto = limpiarMonto(fila[c]);
                 td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
 
-                // --- HABILITAR COLUMNAS I, J y K PARA COLOREO MANUAL ---
                 if(c === 'I' || c === 'J' || c === 'K') {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
@@ -439,7 +446,6 @@
     function calcResult() { try { let res = eval(document.getElementById('calc-display').value); document.getElementById('calc-display').value = Number.isInteger(res) ? res : res.toFixed(2); } catch(e) { document.getElementById('calc-display').value = "Error"; } }
     document.getElementById('close-calc').onclick = toggleCalc;
 
-    // Draggable simple para la calculadora
     const calc = document.getElementById("calc-container");
     const header = document.getElementById("calc-header");
     let px=0, py=0, cx=0, cy=0;
