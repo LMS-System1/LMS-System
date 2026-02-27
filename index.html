@@ -311,7 +311,7 @@
         document.getElementById('reporte-area').style.display = 'block';
         document.getElementById('unidadNombre').innerText = rows[1]?.B || "N/A";
         
-        let Tipo = "N/A";
+        let lider = "N/A";
         for(let r of rows) { if(r.C && r.C.toString().includes("HSBC")) { lider = r.D; break; } }
         document.getElementById('liderNombre').innerText = lider;
 
@@ -454,3 +454,4 @@
 </script>
 </body>
 </html>
+
