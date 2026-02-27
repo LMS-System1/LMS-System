@@ -74,6 +74,7 @@
         .bg-total-fd { background-color: var(--bordo-claro); color: var(--bordo-texto); }
         .celda-first-data { background-color: var(--bordo-claro); color: var(--bordo-texto); }
         .celda-cb { background-color: var(--cb-bg); color: var(--cb-texto); }
+        .monto-rojo-cb { color: #ef4444 !important; background-color: #ffffff !important; font-weight: 700; }
 
         /* Calculadora */
         #calc-container { position: fixed; bottom: 80px; right: 25px; width: 220px; background: #1e293b; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 10000; padding: 12px; cursor: move; display: none; border: 1px solid #334155; }
@@ -301,11 +302,9 @@
             }
         }
 
-        // --- LÓGICA DE ACUMULACIÓN DINÁMICA ---
         const totalesFD = {};
         const bancosCB = new Set();
 
-        // 1ra pasada: Identificar bancos vinculados a "CB"
         rows.forEach(f => {
             const desc = (f.I || "").toString().toUpperCase();
             if (desc.includes(" - CB ")) {
@@ -314,7 +313,6 @@
             }
         });
 
-        // 2da pasada: Acumular totales para First Data y bancos CB
         rows.forEach(f => {
             const desc = (f.I || "").toString().toUpperCase();
             const esFD = desc.includes("FIRST DATA");
@@ -342,7 +340,6 @@
             const desc = (fila.I || "").toString().toUpperCase();
             const esMP = (fila.H||"").toString().startsWith("***") && desc.startsWith("MERPAGO");
             
-            // Identificación para visualización
             const esFD = desc.includes("FIRST DATA");
             const esBancarioCB = Array.from(bancosCB).some(b => desc === b);
             const esCeldaCabeceraCB = desc.includes(" - CB ");
@@ -361,6 +358,9 @@
                     if(monto !== 0 && monto !== null) {
                         if(c==='J' && (esFD || esBancarioCB)) {
                             td.classList.add('celda-first-data');
+                        } else if (c==='K' && esCeldaCabeceraCB) {
+                            // Cambio solicitado: Columna K en fila de cabecera CB
+                            td.classList.add('monto-rojo-cb');
                         } else {
                             td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
                         }
@@ -376,26 +376,22 @@
                 tr.appendChild(td);
             });
 
-            // Columnas extras
             let nVal = "-", cVal = "-", tVal = "-";
             if(esMP) {
                 let v = Math.abs(limpiarMonto(fila.J)||0);
                 if (v > 0) {
                     let fechaFila = excelDateToJS(fila.E);
                     let divisor = 1.0699; 
-
                     if (fechaFila >= new Date(2024, 2, 1) && fechaFila <= new Date(2024, 8, 30)) {
                         divisor = 1.0899;
                     } else if (fechaFila > new Date(2024, 8, 30) && fechaFila < new Date(2025, 1, 1)) {
                         divisor = 1.0799;
                     }
-
                     nVal = formatMoney(v / divisor);
                     cVal = formatMoney(v - (v / divisor));
                 }
             }
             
-            // Lógica de acumulado en la última columna
             if(esFD || esBancarioCB) {
                 let fe = fila.E ? fila.E.toString() : "SF";
                 if (fe !== (rows[i + 1]?.E?.toString() || null)) tVal = formatMoney(totalesFD[fe]);
@@ -406,7 +402,6 @@
                 td.innerText = txt;
                 td.classList.add('celda-interactiva');
                 td.onclick = rotarColor;
-                
                 if(txt !== "-") {
                     if(idx < 2) {
                         td.classList.add('celda-descripcion-mp');
@@ -414,10 +409,8 @@
                         td.classList.add('bg-total-fd');
                     }
                 }
-                
                 tr.appendChild(td);
             });
-
             body.appendChild(tr);
         }
         document.getElementById('downloadPdf').style.display = 'flex';
