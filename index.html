@@ -29,49 +29,43 @@
         .login-box input { display: block; width: 100%; padding: 0.75rem; margin: 0.75rem 0; border: 1px solid var(--border); border-radius: 0.5rem; box-sizing: border-box; }
         .login-box button { width: 100%; padding: 0.75rem; background: var(--accent); border: none; color: white; cursor: pointer; border-radius: 0.5rem; font-weight: 600; transition: 0.3s; }
         
-        .container { max-width: 1450px; margin: 2rem auto; padding: 0 1.5rem; display: none; }
+        .container { max-width: 1450px; margin: 1rem auto; padding: 0 1.5rem; display: none; }
 
         .welcome-header { 
-            background: white; padding: 2rem; border-radius: 1rem; border: 1px solid var(--border);
-            margin-bottom: 1.5rem; display: flex; align-items: center; gap: 20px;
+            background: white; padding: 1.2rem; border-radius: 1rem; border: 1px solid var(--border);
+            margin-bottom: 1rem; display: flex; align-items: center; gap: 15px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .welcome-header i { color: var(--accent); font-size: 2.5rem; }
-        .welcome-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--primary); }
-        .welcome-header p { margin: 5px 0 0 0; color: var(--neutro); font-size: 0.95rem; }
+        .welcome-header i { color: var(--accent); font-size: 2rem; }
+        .welcome-header h1 { margin: 0; font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+        .welcome-header p { margin: 2px 0 0 0; color: var(--neutro); font-size: 0.85rem; }
 
-        .upload-card { background: var(--white); padding: 1.5rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 10px; flex-wrap: wrap; }
+        .upload-card { background: var(--white); padding: 1rem 1.5rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 10px; flex-wrap: wrap; }
         .brand { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .btn-cargar { background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
+        .btn-cargar { background: var(--accent); color: white; padding: 0.6rem 1.2rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
         
         #upload { display: none; }
+        #lector-tools { display: none; gap: 12px; align-items: center; }
 
-        /* Controles específicos del Lector */
-        #lector-controls { display: none; align-items: center; gap: 12px; flex-wrap: wrap; }
+        /* ESTILOS COMPACTOS PARA EL ENCABEZADO DEL REPORTE */
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .info-card { background: white; padding: 0.8rem 1.2rem; border-radius: 0.75rem; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .info-card h4 { margin: 0; font-size: 0.85rem; color: var(--neutro); font-weight: 500; }
+        .info-card span { font-weight: 700; font-size: 0.9rem; }
+        .saldo-val { display: block; font-size: 1.4rem !important; font-weight: 800; }
+        .estado-tag { display: inline-flex; align-items: center; padding: 0.2rem 0.8rem; border-radius: 2rem; color: white; font-size: 0.75rem; font-weight: 700; margin-top: 4px; }
 
-        #search-zero-area { margin-bottom: 1.5rem; display: none; animation: fadeIn 0.4s ease; }
-        .search-table { width: 100%; background: white; border-collapse: collapse; }
-        .search-table th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; font-size: 0.85rem; border-bottom: 2px solid var(--border); }
-        .search-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-
-        #reporte-area { display: none; animation: fadeIn 0.5s ease; }
-        .summary-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-        .info-card { background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .saldo-val { display: block; font-size: 2rem; font-weight: 800; }
-        .estado-tag { display: inline-flex; align-items: center; padding: 0.25rem 1rem; border-radius: 2rem; color: white; font-size: 0.85rem; font-weight: 700; }
-
-        .table-container { background: white; border-radius: 1rem; border: 1px solid var(--border); overflow: auto; max-height: 70vh; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .table-container { background: white; border-radius: 1rem; border: 1px solid var(--border); overflow: auto; max-height: 75vh; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
-        th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
-        td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
+        th { background: #f1f5f9; color: var(--neutro); padding: 0.8rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); font-size: 0.8rem; }
+        td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #f1f5f9; }
         
+        /* ... (Resto de estilos de celdas se mantienen igual) ... */
         .manual-verde { background-color: #22c55e !important; color: white !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; }
-
         .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
         .celda-interactiva:hover { filter: brightness(0.9); }
-
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
         .celda-comi-mp { background-color: var(--comi-mp); color: var(--comi-mp-text); }
@@ -80,7 +74,6 @@
         .celda-first-data { background-color: var(--bordo-claro); color: var(--bordo-texto); }
         .celda-cb { background-color: var(--cb-bg); color: var(--cb-texto); }
         .monto-rojo-cb { color: #ef4444 !important; background-color: #ffffff; font-weight: 700; }
-
         .btn-toggle-off { background: #10b981; }
         .btn-toggle-on { background: #f43f5e; }
 
@@ -122,18 +115,17 @@
             <button class="btn-cargar" style="background: var(--neutro);" onclick="abrirSelector(true)">
                 <i class="fas fa-history"></i> Ult. vez en "0"
             </button>
-            
-            <input type="file" id="upload" accept=".xlsx, .xls" />
-            
-            <div id="lector-controls">
+
+            <div id="lector-tools">
                 <button id="btnResetTotal" class="btn-cargar" style="background: #64748b;">
                     <i class="fas fa-trash-alt"></i> Limpiar mis marcas
                 </button>
-
                 <button id="btnToggleManual" class="btn-cargar btn-toggle-off">
                     <i class="fas fa-lock-open"></i> Coloreo: OFF
                 </button>
             </div>
+
+            <input type="file" id="upload" accept=".xlsx, .xls" />
         </div>
         
         <button id="downloadPdf" class="btn-cargar" style="background: #dc2626; display: none;">
@@ -141,15 +133,15 @@
         </button>
     </div>
 
-    <div id="search-zero-area">
+    <div id="search-zero-area" style="display:none;">
         <div class="table-container" style="max-height: none; margin-bottom: 2rem;">
-            <table class="search-table">
+            <table class="search-table" style="width:100%; border-collapse:collapse;">
                 <thead>
-                    <tr>
-                        <th>Banco</th>
-                        <th>Tipo</th>
-                        <th>Fecha</th>
-                        <th>Estado</th>
+                    <tr style="background:#f1f5f9; border-bottom:2px solid var(--border);">
+                        <th style="padding:10px;">Banco</th>
+                        <th style="padding:10px;">Tipo</th>
+                        <th style="padding:10px;">Fecha</th>
+                        <th style="padding:10px;">Estado</th>
                     </tr>
                 </thead>
                 <tbody id="search-zero-body"></tbody>
@@ -157,20 +149,20 @@
         </div>
     </div>
 
-    <div id="reporte-area">
+    <div id="reporte-area" style="display:none;">
         <div class="summary-grid">
             <div class="info-card">
                 <div>
                     <h4>Unidad: <span id="unidadNombre" style="color:var(--accent)">-</span></h4>
-                    <h4>Líder de Cuenta: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
+                    <h4 style="margin-top:5px;">Líder: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
                 </div>
             </div>
-            <div class="info-card" style="border-top: 4px solid var(--accent);">
-                <div style="width: 100%;">
+            <div class="info-card" style="border-right: 4px solid var(--accent);">
+                <div>
                     <h4>Balance Final</h4>
                     <span id="saldoFinal" class="saldo-val">$0,00</span>
-                    <div id="estadoTexto" class="estado-tag">Cargando...</div>
                 </div>
+                <div id="estadoTexto" class="estado-tag">Cargando...</div>
             </div>
         </div>
         <div class="table-container">
@@ -310,29 +302,23 @@
     });
 
     function procesarUltimoCero(rows) {
-        // Ocultamos controles del lector si estaban visibles
-        document.getElementById('lector-controls').style.display = 'none';
-        
+        document.getElementById('lector-tools').style.display = 'none';
         let encontrado = false;
         const body = document.getElementById('search-zero-body');
         body.innerHTML = '';
-        
         for (let i = rows.length - 1; i >= 1; i--) {
             if (limpiarMonto(rows[i].L) === 0 && rows[i].L !== "") {
-                
                 let tipoReal = rows[i].D || "N/A";
                 let banco = rows[i].C || "N/A";
                 let fecha = rows[i].E || "N/A";
-
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${banco}</td>
-                    <td style="font-weight:600; color:var(--accent)">${tipoReal}</td>
-                    <td>${fecha}</td>
-                    <td><span class="estado-tag" style="background:var(--positivo)">Último $0 encontrado</span></td>
+                    <td style="padding:10px; border-bottom:1px solid #eee;">${banco}</td>
+                    <td style="padding:10px; border-bottom:1px solid #eee; font-weight:600; color:var(--accent)">${tipoReal}</td>
+                    <td style="padding:10px; border-bottom:1px solid #eee;">${fecha}</td>
+                    <td style="padding:10px; border-bottom:1px solid #eee;"><span class="estado-tag" style="background:var(--positivo)">Último $0 encontrado</span></td>
                 `;
                 body.appendChild(tr);
-                
                 document.getElementById('search-zero-area').style.display = 'block';
                 document.getElementById('reporte-area').style.display = 'none'; 
                 encontrado = true; 
@@ -343,23 +329,18 @@
     }
 
     function generarReporte(rows) {
-        // Mostramos controles del lector
-        document.getElementById('lector-controls').style.display = 'flex';
-        
+        document.getElementById('lector-tools').style.display = 'flex';
         document.getElementById('search-zero-area').style.display = 'none';
         document.getElementById('reporte-area').style.display = 'block';
         document.getElementById('unidadNombre').innerText = rows[1]?.B || "N/A";
-        
         let lider = "N/A";
         for(let r of rows) { if(r.C && r.C.toString().includes("HSBC")) { lider = r.D; break; } }
         document.getElementById('liderNombre').innerText = lider;
-
         const saldo = limpiarMonto(rows[rows.length-1]?.L) || 0;
         document.getElementById('saldoFinal').innerText = "$" + formatMoney(saldo);
         const tag = document.getElementById('estadoTexto');
         tag.style.background = saldo < 0 ? 'var(--negativo)' : (saldo > 0 ? 'var(--positivo)' : 'var(--neutro)');
         tag.innerText = saldo < 0 ? "SOBRE REPORTADO" : (saldo > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
-
         let cJ = new Set(), cK = new Set();
         for(let i=1; i<rows.length; i++) {
             let mK = limpiarMonto(rows[i].K);
@@ -372,7 +353,6 @@
                 }
             }
         }
-
         const totalesFD = {};
         const bancosCB = new Set();
         rows.forEach(f => {
@@ -389,16 +369,13 @@
                 totalesFD[fe] = (totalesFD[fe]||0) + (limpiarMonto(f.J)||0);
             }
         });
-
         const cols = ['E','F','G','H','I','J','K'];
         const hRow = document.getElementById('tableHeader');
         hRow.innerHTML = '';
         cols.forEach(c => { let th=document.createElement('th'); th.innerText=rows[0][c]||c; hRow.appendChild(th); });
         hRow.innerHTML += '<th>Monto Neto</th><th>Comision MP</th><th>TOTAL FD</th>';
-
         const body = document.getElementById('tableBody');
         body.innerHTML = '';
-
         for(let i=1; i<rows.length; i++){
             const fila = rows[i];
             if(!fila.E && !fila.I) continue;
@@ -407,17 +384,11 @@
             const esMP = (fila.H||"").toString().startsWith("***") && desc.startsWith("MERPAGO");
             const esFD = desc.includes("FIRST DATA");
             const esBancarioCB = Array.from(bancosCB).some(b => desc === b);
-            
             cols.forEach(c => {
                 const td = document.createElement('td');
                 let monto = limpiarMonto(fila[c]);
                 td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
-
-                if(c === 'I' || c === 'J' || c === 'K') {
-                    td.classList.add('celda-interactiva');
-                    td.onclick = rotarColor;
-                }
-
+                if(c === 'I' || c === 'J' || c === 'K') { td.classList.add('celda-interactiva'); td.onclick = rotarColor; }
                 if(c==='J' || c==='K') {
                     if(monto !== 0 && monto !== null) {
                         if(c==='J' && (esFD || esBancarioCB)) td.classList.add('celda-first-data');
@@ -433,7 +404,6 @@
                 }
                 tr.appendChild(td);
             });
-
             let nVal = "-", cVal = "-", tVal = "-";
             if(esMP) {
                 let v = Math.abs(limpiarMonto(fila.J)||0);
@@ -449,7 +419,6 @@
                 let fe = fila.E ? fila.E.toString() : "SF";
                 if (fe !== (rows[i + 1]?.E?.toString() || null)) tVal = formatMoney(totalesFD[fe]);
             }
-
             [nVal, cVal, tVal].forEach((txt, idx) => {
                 const td = document.createElement('td');
                 td.innerText = txt;
