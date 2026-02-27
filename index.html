@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LMS System</title>
+    <title>LECTOR DBU-004 - LMS</title>
     
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -16,21 +16,19 @@
         :root { 
             --primary: #1e293b; --accent: #3b82f6; --bg: #f8fafc; --white: #ffffff; 
             --negativo: #ef4444; --positivo: #10b981; --neutro: #64748b; --border: #e2e8f0;
-            --bordo-claro: #F2E7F4; --bordo-texto: #4A148C; --mp-bg: #f0f9ff; --mp-color: #0ea5e9;
-            --match-bg: #dcfce7; --match-text: #166534; --no-match: #ffedd5; --no-match-text: #9a3412;
-            --cb-bg: #F5D0CE; --cb-texto: #721c24;
+            --bordo-claro: #F2E7F4; --bordo-texto: #4A148C; --cb-bg: #F5D0CE; --cb-texto: #721c24;
+            --mp-color: #0ea5e9; --mp-bg: #f0f9ff; --match-bg: #dcfce7; --match-text: #166534;
+            --no-match: #ffedd5; --no-match-text: #9a3412; --comi-mp: #fef9c3; --comi-mp-text: #854d0e;
         }
 
         body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--primary); }
         
-        /* Login Overlay */
         #login-overlay { position: fixed; inset: 0; background: var(--primary); z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .login-box { background: white; padding: 2rem; border-radius: 1rem; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); width: 350px; }
         .login-box h2 { margin-bottom: 1.5rem; font-weight: 700; color: var(--primary); }
         .login-box input { display: block; width: 100%; padding: 0.75rem; margin: 0.75rem 0; border: 1px solid var(--border); border-radius: 0.5rem; box-sizing: border-box; }
         .login-box button { width: 100%; padding: 0.75rem; background: var(--accent); border: none; color: white; cursor: pointer; border-radius: 0.5rem; font-weight: 600; transition: 0.3s; }
         
-        /* Main Container */
         .container { max-width: 1450px; margin: 2rem auto; padding: 0 1.5rem; display: none; }
 
         .welcome-header { 
@@ -40,14 +38,15 @@
         }
         .welcome-header i { color: var(--accent); font-size: 2.5rem; }
         .welcome-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+        .welcome-header p { margin: 5px 0 0 0; color: var(--neutro); font-size: 0.95rem; }
 
         .upload-card { background: var(--white); padding: 1.5rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 10px; flex-wrap: wrap; }
+        .brand { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         .btn-cargar { background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
         .btn-cargar.secondary { background: var(--neutro); }
         
         #upload { display: none; }
 
-        /* Summary & Tables */
         #reporte-area { display: none; animation: fadeIn 0.5s ease; }
         .summary-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
         .info-card { background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -59,7 +58,7 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* INTERACCIÓN MANUAL (Prioridad !important) */
+        /* ESTADOS MANUALES (PRIORIDAD MÁXIMA) */
         .manual-verde { background-color: #22c55e !important; color: white !important; border-left: none !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; border-left: none !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; border-left: none !important; }
@@ -67,12 +66,13 @@
         .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
         .celda-interactiva:hover { filter: brightness(0.9); }
 
-        /* Colores Condicionales (Solo si hay contenido) */
+        /* Colores del Sistema */
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
-        .celda-desc-mp { background-color: var(--mp-bg); color: var(--mp-color); border-left: 4px solid var(--mp-color); }
-        .celda-mp-valor { background-color: var(--mp-bg); color: var(--mp-color); }
-        .celda-fd-valor { background-color: var(--bordo-claro); color: var(--bordo-texto); }
+        .celda-comi-mp { background-color: var(--comi-mp); color: var(--comi-mp-text); }
+        .celda-descripcion-mp { background-color: var(--mp-bg); color: var(--mp-color); border-left: 4px solid var(--mp-color); }
+        .bg-total-fd { background-color: var(--bordo-claro); color: var(--bordo-texto); }
+        .celda-first-data { background-color: var(--bordo-claro); color: var(--bordo-texto); }
         .celda-cb { background-color: var(--cb-bg); color: var(--cb-texto); }
 
         /* Calculadora */
@@ -115,6 +115,7 @@
                 <i class="fas fa-history"></i> Ult. vez en "0"
             </button>
             <input type="file" id="upload" accept=".xlsx, .xls" />
+            
             <button id="btnResetTotal" class="btn-cargar" style="background: #64748b;">
                 <i class="fas fa-trash-alt"></i> Limpiar mis marcas
             </button>
@@ -182,200 +183,243 @@
 <script>
     let modoBusquedaCero = false;
 
-    // Formateo de Dinero
     function formatMoney(val) {
         if (val === null || val === undefined || isNaN(val)) return "-";
         return val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    // Rotación de colores manual
     function rotarColor(e) {
         const td = e.currentTarget;
-        const estados = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
+        const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
         let actualIdx = 0;
-        estados.forEach((cls, idx) => { if(cls !== '' && td.classList.contains(cls)) actualIdx = idx; });
-        estados.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
-        let next = (actualIdx + 1) % estados.length;
-        if(estados[next] !== '') td.classList.add(estados[next]);
+        
+        estadosManuales.forEach((cls, idx) => {
+            if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
+        });
+        
+        estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
+        
+        let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
+        if (estadosManuales[siguienteIdx] !== '') {
+            td.classList.add(estadosManuales[siguienteIdx]);
+        }
     }
 
-    // Login (Basado en DB_USUARIOS de runtime.data.js)
-    async function generarHash(s) {
-        const b = new TextEncoder().encode(s);
-        const h = await crypto.subtle.digest('SHA-256', b);
-        return Array.from(new Uint8Array(h)).map(x => x.toString(16).padStart(2, '0')).join('');
+    document.getElementById('btnResetTotal').addEventListener('click', function() {
+        const marcados = document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo');
+        marcados.forEach(el => el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo'));
+    });
+
+    async function generarHash(string) {
+        const msgUint8 = new TextEncoder().encode(string);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     async function validarLogin() {
         const u = document.getElementById('user').value;
         const p = document.getElementById('pass').value;
-        const h = await generarHash(p);
-        if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u] === h) {
+        const hashIngresado = await generarHash(p);
+        if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u] === hashIngresado) {
             document.getElementById('user-display').innerText = u;
             document.getElementById('login-overlay').remove();
             document.getElementById('main-content').style.display = 'block';
             document.getElementById('open-calc-btn').style.display = 'flex';
-        } else alert("Credenciales incorrectas.");
+        } else { alert("Credenciales incorrectas."); }
     }
     document.getElementById('btnLogin').onclick = validarLogin;
 
-    function abrirSelector(b) { modoBusquedaCero = b; document.getElementById('upload').click(); }
+    function abrirSelector(esModoBusqueda) { modoBusquedaCero = esModoBusqueda; document.getElementById('upload').click(); }
     
-    function limpiarMonto(v) { 
-        if (!v && v !== 0) return null; if (typeof v === 'number') return v; 
-        let s = v.toString().trim(); 
+    function limpiarMonto(valor) { 
+        if (valor === undefined || valor === null || valor === "") return null; 
+        if (typeof valor === 'number') return valor; 
+        let s = valor.toString().trim(); 
         if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.'); 
         else if (s.includes(',')) s = s.replace(',', '.'); 
-        let n = parseFloat(s.replace(/[^0-9.-]/g, '')); return isNaN(n) ? null : n; 
+        let num = parseFloat(s.replace(/[^0-9.-]/g, '')); 
+        return isNaN(num) ? null : num; 
     }
 
-    document.getElementById('upload').onchange = (e) => {
-        const f = e.target.files[0]; if(!f) return;
-        const r = new FileReader();
-        r.onload = (ev) => {
-            const d = new Uint8Array(ev.target.result);
-            const w = XLSX.read(d, {type: 'array', cellDates: true});
-            const rows = XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]], {header: "A", defval: ""});
-            if(rows.length > 0) modoBusquedaCero ? procesarUltimoCero(rows) : generarReporte(rows);
+    function excelDateToJS(serial) { 
+        if (typeof serial === 'number') return new Date(Math.round((serial - 25569) * 86400 * 1000)); 
+        let d = new Date(serial); return isNaN(d.getTime()) ? new Date(0) : d; 
+    }
+
+    document.getElementById('upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, {type: 'array', cellDates: true});
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: "A", defval: ""});
+            if(rows.length > 0) { 
+                if (modoBusquedaCero) { procesarUltimoCero(rows); } else { generarReporte(rows); } 
+            }
             e.target.value = '';
         };
-        r.readAsArrayBuffer(f);
-    };
+        reader.readAsArrayBuffer(file);
+    });
 
     function procesarUltimoCero(rows) {
+        let encontrado = false;
         for (let i = rows.length - 1; i >= 1; i--) {
-            if (limpiarMonto(rows[i].L) === 0 && rows[i].L !== "") {
-                alert(`Último $0 encontrado: ${rows[i].C} - ${rows[i].E}`);
-                return;
+            const valorL = limpiarMonto(rows[i].L);
+            if (valorL === 0 && rows[i].L !== "") {
+                alert(`Último $0 encontrado:\nBanco: ${rows[i].C}\nLíder: ${rows[i].D}\nFecha: ${rows[i].E}`);
+                encontrado = true; break;
             }
         }
-        alert("No se encontró balance en 0.");
+        if (!encontrado) alert("No se encontró balance en 0.");
     }
 
     function generarReporte(rows) {
         document.getElementById('reporte-area').style.display = 'block';
         document.getElementById('unidadNombre').innerText = rows[1]?.B || "N/A";
         
-        let lid = "No identificado";
-        for(let r of rows) if(r.C?.toString().includes("HSBC")) { lid = r.D; break; }
-        document.getElementById('liderNombre').innerText = lid;
+        let lider = "No identificado";
+        for(let r of rows) { if(r.C && r.C.toString().includes("HSBC")) { lider = r.D; break; } }
+        document.getElementById('liderNombre').innerText = lider;
 
-        const sld = limpiarMonto(rows[rows.length-1]?.L) || 0;
-        document.getElementById('saldoFinal').innerText = "$" + formatMoney(sld);
+        const saldo = limpiarMonto(rows[rows.length-1]?.L) || 0;
+        document.getElementById('saldoFinal').innerText = "$" + formatMoney(saldo);
         const tag = document.getElementById('estadoTexto');
-        tag.style.background = sld < 0 ? 'var(--negativo)' : (sld > 0 ? 'var(--positivo)' : 'var(--neutro)');
-        tag.innerText = sld < 0 ? "SOBRE REPORTADO" : (sld > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
+        tag.style.background = saldo < 0 ? 'var(--negativo)' : (saldo > 0 ? 'var(--positivo)' : 'var(--neutro)');
+        tag.innerText = saldo < 0 ? "SOBRE REPORTADO" : (saldo > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
 
-        // Pre-calculos de matching e importes
         let cJ = new Set(), cK = new Set();
         for(let i=1; i<rows.length; i++) {
-            let mk = limpiarMonto(rows[i].K); if(!mk) continue;
+            let mK = limpiarMonto(rows[i].K);
+            if(!mK) continue;
+            let fE = excelDateToJS(rows[i].E);
             for(let j=1; j<rows.length; j++){
-                if(!cJ.has(j) && mk === limpiarMonto(rows[j].J)) {
+                if(cJ.has(j)) continue;
+                if(mK === limpiarMonto(rows[j].J) && Math.abs(fE - excelDateToJS(rows[j].E)) <= 864000000) {
                     cK.add(i); cJ.add(j); break;
                 }
             }
         }
 
-        const tFD = {};
+        const totalesFD = {};
         rows.forEach(f => {
-            if(f.I?.toString().includes("FIRST DATA")) {
-                let e = f.E?.toString() || "SF";
-                tFD[e] = (tFD[e]||0) + (limpiarMonto(f.J)||0);
+            if((f.I||"").includes("FIRST DATA")) {
+                let fe = f.E ? f.E.toString() : "SF";
+                totalesFD[fe] = (totalesFD[fe]||0) + (limpiarMonto(f.J)||0);
             }
         });
 
+        const cols = ['E','F','G','H','I','J','K'];
+        const hRow = document.getElementById('tableHeader');
+        hRow.innerHTML = '';
+        cols.forEach(c => { let th=document.createElement('th'); th.innerText=rows[0][c]||c; hRow.appendChild(th); });
+        hRow.innerHTML += '<th>Monto Neto</th><th>Comision MP</th><th>TOTAL FD</th>';
+
         const body = document.getElementById('tableBody');
-        const head = document.getElementById('tableHeader');
-        head.innerHTML = '<th>Fecha</th><th>Tarjeta</th><th>Descripción</th><th>Cantidad Tarjeta</th><th>Cantidad Declarada</th><th>Monto Neto</th><th>Comision MP</th><th>TOTAL FD</th>';
         body.innerHTML = '';
 
         for(let i=1; i<rows.length; i++){
-            const f = rows[i]; if(!f.E && !f.I) continue;
+            const fila = rows[i];
+            if(!fila.E && !fila.I) continue;
             const tr = document.createElement('tr');
-            const d = (f.I || "").toString().toUpperCase();
-            const esMP = d.includes("MERPAGO");
-            const esFD = d.includes("FIRST DATA");
-
-            // Columnas del Excel (E a K)
-            ['E','F','I','J','K'].forEach(c => {
+            const desc = (fila.I || "").toString().toUpperCase();
+            const esMP = (fila.H||"").toString().startsWith("***") && desc.startsWith("MERPAGO");
+            const esFD = desc.includes("FIRST DATA");
+            const esCB = desc.includes("CB");
+            
+            cols.forEach(c => {
                 const td = document.createElement('td');
-                let m = limpiarMonto(f[c]);
-                td.innerText = (c==='J'||c==='K') ? formatMoney(m) : (f[c]||'');
-                td.classList.add('celda-interactiva');
-                td.onclick = rotarColor;
+                let monto = limpiarMonto(fila[c]);
+                td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
+                
+                if(c==='I' || c==='J' || c==='K') {
+                    td.classList.add('celda-interactiva');
+                    td.onclick = rotarColor;
+                }
 
                 if(c==='J' || c==='K') {
-                    if(m !== null && m !== 0) {
-                        if(esFD && c==='J') td.classList.add('celda-fd-valor');
-                        else td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
+                    if(monto !== 0 && monto !== null) {
+                        if(c==='J' && esFD) {
+                            td.classList.add('celda-first-data');
+                        } else {
+                            td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
+                        }
                     }
                 }
-                if(c==='I') {
-                    if(esMP) td.classList.add('celda-desc-mp');
-                    if(esFD) td.classList.add('celda-fd-valor');
-                    if(d.includes("CB")) td.classList.add('celda-cb');
+                
+                if(c==='I'){
+                    if(desc.includes("COMI MP")) td.classList.add('celda-comi-mp');
+                    if(esMP) td.classList.add('celda-descripcion-mp');
+                    if(esFD) td.classList.add('celda-first-data');
+                    if(esCB) td.classList.add('celda-cb');
                 }
                 tr.appendChild(td);
             });
 
-            // Columnas Extras (Calculadas)
-            let netoVal = "-", comiVal = "-", fdVal = "-";
+            // Columnas extras corregidas
+            let nVal = "-", cVal = "-", tVal = "-";
             if(esMP) {
-                let v = Math.abs(limpiarMonto(f.J)||0);
-                if(v > 0) {
-                    netoVal = formatMoney(v/1.0699);
-                    comiVal = formatMoney(v - (v/1.0699));
+                let v = Math.abs(limpiarMonto(fila.J)||0);
+                if (v > 0) {
+                    cVal = formatMoney(v/6.099);
+                    nVal = formatMoney(v - (v/6.099));
                 }
             }
             if(esFD) {
-                let e = f.E?.toString() || "SF";
-                if (e !== (rows[i + 1]?.E?.toString() || null)) fdVal = formatMoney(tFD[e]);
+                let fe = fila.E ? fila.E.toString() : "SF";
+                if (fe !== (rows[i + 1]?.E?.toString() || null)) tVal = formatMoney(totalesFD[fe]);
             }
 
-            [netoVal, comiVal, fdVal].forEach((val, idx) => {
+            [nVal, cVal, tVal].forEach((txt, idx) => {
                 const td = document.createElement('td');
-                td.innerText = val;
+                td.innerText = txt;
                 td.classList.add('celda-interactiva');
                 td.onclick = rotarColor;
-                // SOLO COLOR SI HAY VALOR
-                if(val !== "-") {
-                    if(idx < 2) td.classList.add('celda-mp-valor');
-                    else td.classList.add('celda-fd-valor');
+                
+                // SOLO COLOREA SI EL TEXTO NO ES "-"
+                if(txt !== "-") {
+                    if(idx < 2) {
+                        td.classList.add('celda-descripcion-mp');
+                    } else {
+                        td.classList.add('bg-total-fd');
+                    }
                 }
+                
                 tr.appendChild(td);
             });
+
             body.appendChild(tr);
         }
         document.getElementById('downloadPdf').style.display = 'flex';
     }
 
-    // Funciones Calculadora
-    function toggleCalc() { const c = document.getElementById('calc-container'); c.style.display = (c.style.display==='none'?'block':'none'); }
+    document.getElementById('downloadPdf').onclick = () => {
+        const element = document.getElementById('reporte-area');
+        html2pdf().set({ margin: 5, filename: 'Reporte_DBU004.pdf', html2canvas: { scale: 3 }, jsPDF: { orientation: 'landscape' } }).from(element).save();
+    };
+
+    function toggleCalc() { const c = document.getElementById('calc-container'); c.style.display = (c.style.display==='none'||c.style.display==='')?'block':'none'; }
     function calcInput(v) { document.getElementById('calc-display').value += v; }
     function calcClear() { document.getElementById('calc-display').value = ''; }
     function calcBackspace() { let d = document.getElementById('calc-display'); d.value = d.value.slice(0,-1); }
-    function calcResult() { try { document.getElementById('calc-display').value = eval(document.getElementById('calc-display').value).toFixed(2); } catch(e) { } }
+    function calcResult() { 
+        try { 
+            let res = eval(document.getElementById('calc-display').value); 
+            document.getElementById('calc-display').value = Number.isInteger(res) ? res : res.toFixed(2);
+        } catch(e) { document.getElementById('calc-display').value = "Error"; setTimeout(calcClear, 1000); } 
+    }
     document.getElementById('close-calc').onclick = toggleCalc;
 
-    // Arrastre de calculadora
-    const cl = document.getElementById("calc-container"), h = document.getElementById("calc-header");
+    const calc = document.getElementById("calc-container");
+    const header = document.getElementById("calc-header");
     let px=0, py=0, cx=0, cy=0;
-    h.onmousedown = (e) => {
-        cx=e.clientX; cy=e.clientY;
+    header.onmousedown = (e) => {
+        e.preventDefault(); cx=e.clientX; cy=e.clientY;
         document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
         document.onmousemove = (e) => {
-            px=cx-e.clientX; py=cy-e.clientY; cx=e.clientX; cy=e.clientY;
-            cl.style.top = (cl.offsetTop - py) + "px"; cl.style.left = (cl.offsetLeft - px) + "px";
+            e.preventDefault(); px=cx-e.clientX; py=cy-e.clientY; cx=e.clientX; cy=e.clientY;
+            calc.style.top = (calc.offsetTop - py) + "px"; calc.style.left = (calc.offsetLeft - px) + "px";
         };
-    };
-
-    document.getElementById('btnResetTotal').onclick = () => {
-        document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo').forEach(el => el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo'));
-    };
-
-    document.getElementById('downloadPdf').onclick = () => {
-        html2pdf().set({ margin: 5, filename: 'Reporte_LMS.pdf', html2canvas: { scale: 2 }, jsPDF: { orientation: 'landscape' } }).from(document.getElementById('reporte-area')).save();
     };
 </script>
 </body>
