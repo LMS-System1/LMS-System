@@ -47,6 +47,13 @@
         
         #upload { display: none; }
 
+        /* Estilo para el área de búsqueda de Cero */
+        #search-zero-area { margin-bottom: 1.5rem; display: none; animation: fadeIn 0.4s ease; }
+        .search-table { width: 100%; background: white; border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-collapse: collapse; }
+        .search-table th { background: #334155; color: white; padding: 12px; text-align: left; font-size: 0.85rem; }
+        .search-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .search-table tr:last-child td { border-bottom: none; }
+
         #reporte-area { display: none; animation: fadeIn 0.5s ease; }
         .summary-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
         .info-card { background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -58,7 +65,7 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* ESTADOS MANUALES (PRIORIDAD MÁXIMA) */
+        /* ESTADOS MANUALES */
         .manual-verde { background-color: #22c55e !important; color: white !important; border-left: none !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; border-left: none !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; border-left: none !important; }
@@ -127,12 +134,26 @@
         </button>
     </div>
 
+    <div id="search-zero-area">
+        <table class="search-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-university"></i> Banco</th>
+                    <th><i class="fas fa-user-tie"></i> Líder</th>
+                    <th><i class="fas fa-calendar-alt"></i> Fecha</th>
+                    <th><i class="fas fa-info-circle"></i> Estado</th>
+                </tr>
+            </thead>
+            <tbody id="search-zero-body"></tbody>
+        </table>
+    </div>
+
     <div id="reporte-area">
         <div class="summary-grid">
             <div class="info-card">
                 <div>
                     <h4>Unidad: <span id="unidadNombre" style="color:var(--accent)">-</span></h4>
-                    <h4>Líder de Cuenta: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
+                    <h4>Líder: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
                 </div>
             </div>
             <div class="info-card" style="border-top: 4px solid var(--accent);">
@@ -193,17 +214,10 @@
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
         let actualIdx = 0;
-        
-        estadosManuales.forEach((cls, idx) => {
-            if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
-        });
-        
+        estadosManuales.forEach((cls, idx) => { if (cls !== '' && td.classList.contains(cls)) actualIdx = idx; });
         estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
-        
         let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
-        if (estadosManuales[siguienteIdx] !== '') {
-            td.classList.add(estadosManuales[siguienteIdx]);
-        }
+        if (estadosManuales[siguienteIdx] !== '') td.classList.add(estadosManuales[siguienteIdx]);
     }
 
     document.getElementById('btnResetTotal').addEventListener('click', function() {
@@ -230,7 +244,10 @@
     }
     document.getElementById('btnLogin').onclick = validarLogin;
 
-    function abrirSelector(esModoBusqueda) { modoBusquedaCero = esModoBusqueda; document.getElementById('upload').click(); }
+    function abrirSelector(esModoBusqueda) { 
+        modoBusquedaCero = esModoBusqueda; 
+        document.getElementById('upload').click(); 
+    }
     
     function limpiarMonto(valor) { 
         if (valor === undefined || valor === null || valor === "") return null; 
@@ -245,6 +262,12 @@
     function excelDateToJS(serial) { 
         if (typeof serial === 'number') return new Date(Math.round((serial - 25569) * 86400 * 1000)); 
         let d = new Date(serial); return isNaN(d.getTime()) ? new Date(0) : d; 
+    }
+
+    function formatFechaDisplay(val) {
+        if (!val) return "-";
+        if (typeof val === 'number') return excelDateToJS(val).toLocaleDateString('es-AR');
+        return val;
     }
 
     document.getElementById('upload').addEventListener('change', function(e) {
@@ -265,17 +288,31 @@
 
     function procesarUltimoCero(rows) {
         let encontrado = false;
+        const searchArea = document.getElementById('search-zero-area');
+        const searchBody = document.getElementById('search-zero-body');
+        searchBody.innerHTML = '';
+        
         for (let i = rows.length - 1; i >= 1; i--) {
             const valorL = limpiarMonto(rows[i].L);
             if (valorL === 0 && rows[i].L !== "") {
-                alert(`Último $0 encontrado:\nBanco: ${rows[i].C}\nLíder: ${rows[i].D}\nFecha: ${rows[i].E}`);
-                encontrado = true; break;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${rows[i].C || 'N/A'}</td>
+                    <td>${rows[i].D || 'N/A'}</td>
+                    <td>${formatFechaDisplay(rows[i].E)}</td>
+                    <td style="color:var(--positivo); font-weight:700;"><i class="fas fa-check-circle"></i> Último saldo en $0</td>
+                `;
+                searchBody.appendChild(tr);
+                searchArea.style.display = 'block';
+                encontrado = true; 
+                break;
             }
         }
-        if (!encontrado) alert("No se encontró balance en 0.");
+        if (!encontrado) alert("No se encontró balance en 0 en este archivo.");
     }
 
     function generarReporte(rows) {
+        document.getElementById('search-zero-area').style.display = 'none';
         document.getElementById('reporte-area').style.display = 'block';
         document.getElementById('unidadNombre').innerText = rows[1]?.B || "N/A";
         
@@ -317,7 +354,6 @@
             const desc = (f.I || "").toString().toUpperCase();
             const esFD = desc.includes("FIRST DATA");
             const esBancoCB = Array.from(bancosCB).some(b => desc === b);
-
             if (esFD || esBancoCB) {
                 let fe = f.E ? f.E.toString() : "SF";
                 totalesFD[fe] = (totalesFD[fe]||0) + (limpiarMonto(f.J)||0);
@@ -339,7 +375,6 @@
             const tr = document.createElement('tr');
             const desc = (fila.I || "").toString().toUpperCase();
             const esMP = (fila.H||"").toString().startsWith("***") && desc.startsWith("MERPAGO");
-            
             const esFD = desc.includes("FIRST DATA");
             const esBancarioCB = Array.from(bancosCB).some(b => desc === b);
             const esCeldaCabeceraCB = desc.includes(" - CB ");
@@ -348,25 +383,15 @@
                 const td = document.createElement('td');
                 let monto = limpiarMonto(fila[c]);
                 td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
-                
-                if(c==='I' || c==='J' || c==='K') {
-                    td.classList.add('celda-interactiva');
-                    td.onclick = rotarColor;
-                }
+                if(c==='I' || c==='J' || c==='K') { td.classList.add('celda-interactiva'); td.onclick = rotarColor; }
 
                 if(c==='J' || c==='K') {
                     if(monto !== 0 && monto !== null) {
-                        if(c==='J' && (esFD || esBancarioCB)) {
-                            td.classList.add('celda-first-data');
-                        } else if (c==='K' && esCeldaCabeceraCB) {
-                            // Cambio solicitado: Columna K en fila de cabecera CB
-                            td.classList.add('monto-rojo-cb');
-                        } else {
-                            td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
-                        }
+                        if(c==='J' && (esFD || esBancarioCB)) td.classList.add('celda-first-data');
+                        else if (c==='K' && esCeldaCabeceraCB) td.classList.add('monto-rojo-cb');
+                        else td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
                     }
                 }
-                
                 if(c==='I'){
                     if(desc.includes("COMI MP")) td.classList.add('celda-comi-mp');
                     if(esMP) td.classList.add('celda-descripcion-mp');
@@ -382,16 +407,12 @@
                 if (v > 0) {
                     let fechaFila = excelDateToJS(fila.E);
                     let divisor = 1.0699; 
-                    if (fechaFila >= new Date(2024, 2, 1) && fechaFila <= new Date(2024, 8, 30)) {
-                        divisor = 1.0899;
-                    } else if (fechaFila > new Date(2024, 8, 30) && fechaFila < new Date(2025, 1, 1)) {
-                        divisor = 1.0799;
-                    }
+                    if (fechaFila >= new Date(2024, 2, 1) && fechaFila <= new Date(2024, 8, 30)) divisor = 1.0899;
+                    else if (fechaFila > new Date(2024, 8, 30) && fechaFila < new Date(2025, 1, 1)) divisor = 1.0799;
                     nVal = formatMoney(v / divisor);
                     cVal = formatMoney(v - (v / divisor));
                 }
             }
-            
             if(esFD || esBancarioCB) {
                 let fe = fila.E ? fila.E.toString() : "SF";
                 if (fe !== (rows[i + 1]?.E?.toString() || null)) tVal = formatMoney(totalesFD[fe]);
@@ -403,11 +424,8 @@
                 td.classList.add('celda-interactiva');
                 td.onclick = rotarColor;
                 if(txt !== "-") {
-                    if(idx < 2) {
-                        td.classList.add('celda-descripcion-mp');
-                    } else {
-                        td.classList.add('bg-total-fd');
-                    }
+                    if(idx < 2) td.classList.add('celda-descripcion-mp');
+                    else td.classList.add('bg-total-fd');
                 }
                 tr.appendChild(td);
             });
