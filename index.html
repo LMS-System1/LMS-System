@@ -58,6 +58,7 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
+        /* Prioridad máxima para estados manuales mediante !important */
         .manual-verde { background-color: #22c55e !important; color: white !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; }
@@ -328,9 +329,14 @@
                 let monto = limpiarMonto(fila[c]);
                 td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
                 
-                if(c==='J' || c==='K') {
+                // Aplicar interactividad a partir de la columna Descripción ('I') o si son J/K
+                if(c==='I' || c==='J' || c==='K') {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
+                }
+
+                // Lógica de colores por defecto
+                if(c==='J' || c==='K') {
                     if(monto !== 0 && monto !== null) {
                         if(c==='J' && esFD) {
                             td.classList.add('celda-first-data');
@@ -357,10 +363,8 @@
             }
             if(esFD) {
                 let fe = fila.E ? fila.E.toString() : "SF";
-                // Lógica añadida: mostrar solo en la última fila del grupo de fechas
                 let siguienteFila = rows[i + 1];
                 let fechaSiguiente = siguienteFila && siguienteFila.E ? siguienteFila.E.toString() : null;
-                
                 if (fe !== fechaSiguiente) {
                     tfd = formatMoney(totalesFD[fe]);
                 } else {
@@ -371,10 +375,11 @@
             [neto, comi, tfd].forEach((v, idx) => {
                 const td = document.createElement('td');
                 td.innerText = v;
+                // Siempre interactiva para las columnas especiales
                 td.classList.add('celda-interactiva');
+                td.onclick = rotarColor;
                 
                 if (v !== "-") {
-                    td.onclick = rotarColor;
                     if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
                     if (idx === 2) td.classList.add('bg-total-fd');
                 }
