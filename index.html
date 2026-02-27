@@ -58,7 +58,7 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* Prioridad absoluta para colores manuales */
+        /* --- ESTADOS MANUALES (PRIORIDAD MÁXIMA) --- */
         .manual-verde { background-color: #22c55e !important; color: white !important; border-left: none !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; border-left: none !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; border-left: none !important; }
@@ -66,16 +66,16 @@
         .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
         .celda-interactiva:hover { filter: brightness(0.9); }
 
+        /* Colores del Sistema */
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
-        .celda-comi-mp { background-color: var(--comi-mp) !important; color: var(--comi-mp-text) !important; }
-        .celda-descripcion-mp { background-color: var(--mp-bg) !important; color: var(--mp-color) !important; border-left: 4px solid var(--mp-color); }
-        .col-especial { background-color: #f8fafc; font-weight: 700; color: var(--mp-color); border-left: 1px solid var(--border); text-align: right; }
-        .col-fd-total { font-weight: 800; text-align: right; border-left: 1px solid var(--border); color: var(--neutro); }
-        .bg-total-fd { background-color: var(--bordo-claro) !important; color: var(--bordo-texto) !important; }
-        .celda-first-data { background-color: var(--bordo-claro) !important; color: var(--bordo-texto) !important; }
-        .celda-cb { background-color: var(--cb-bg) !important; color: var(--cb-texto) !important; }
+        .celda-comi-mp { background-color: var(--comi-mp); color: var(--comi-mp-text); }
+        .celda-descripcion-mp { background-color: var(--mp-bg); color: var(--mp-color); border-left: 4px solid var(--mp-color); }
+        .bg-total-fd { background-color: var(--bordo-claro); color: var(--bordo-texto); }
+        .celda-first-data { background-color: var(--bordo-claro); color: var(--bordo-texto); }
+        .celda-cb { background-color: var(--cb-bg); color: var(--cb-texto); }
 
+        /* Calculadora */
         #calc-container { position: fixed; bottom: 80px; right: 25px; width: 220px; background: #1e293b; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 10000; padding: 12px; cursor: move; display: none; border: 1px solid #334155; }
         #calc-display { width: 100%; border: none; background: #0f172a; color: #10b981; padding: 12px; text-align: right; font-family: monospace; font-size: 1.3rem; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
         .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
@@ -192,10 +192,16 @@
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
         let actualIdx = 0;
+        
+        // Identificar estado actual
         estadosManuales.forEach((cls, idx) => {
             if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
         });
+        
+        // Limpiar estados previos
         estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
+        
+        // Aplicar siguiente
         let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
         if (estadosManuales[siguienteIdx] !== '') {
             td.classList.add(estadosManuales[siguienteIdx]);
@@ -329,13 +335,13 @@
                 let monto = limpiarMonto(fila[c]);
                 td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
                 
-                // Interactividad para I, J, K (Descripción, tarjeta y declarada)
+                // Activar clic en Descripcion e importes J/K
                 if(c==='I' || c==='J' || c==='K') {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
                 }
 
-                // Colores lógicos de base
+                // Colores de sistema
                 if(c==='J' || c==='K') {
                     if(monto !== 0 && monto !== null) {
                         if(c==='J' && esFD) {
@@ -355,34 +361,26 @@
                 tr.appendChild(td);
             });
 
-            let neto="-", comi="-", tfd="-";
+            // Columnas extras
+            let nVal = "-", cVal = "-", tVal = "-";
             if(esMP) {
                 let v = Math.abs(limpiarMonto(fila.J)||0);
-                comi = formatMoney(v/6.099);
-                neto = formatMoney(v - (v/6.099));
+                cVal = formatMoney(v/6.099);
+                nVal = formatMoney(v - (v/6.099));
             }
             if(esFD) {
                 let fe = fila.E ? fila.E.toString() : "SF";
-                let siguienteFila = rows[i + 1];
-                let fechaSiguiente = siguienteFila && siguienteFila.E ? siguienteFila.E.toString() : null;
-                if (fe !== fechaSiguiente) {
-                    tfd = formatMoney(totalesFD[fe]);
-                } else {
-                    tfd = "-";
-                }
+                if (fe !== (rows[i + 1]?.E?.toString() || null)) tVal = formatMoney(totalesFD[fe]);
             }
 
-            // Columnas finales calculadas
-            [neto, comi, tfd].forEach((v, idx) => {
+            [nVal, cVal, tVal].forEach((txt, idx) => {
                 const td = document.createElement('td');
-                td.innerText = v;
-                // Siempre interactivas
+                td.innerText = txt;
                 td.classList.add('celda-interactiva');
                 td.onclick = rotarColor;
                 
-                // Estilos base de MP o FD
-                if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
-                if (idx === 2) td.classList.add('bg-total-fd');
+                if(idx < 2) td.classList.add('celda-descripcion-mp');
+                else td.classList.add('bg-total-fd');
                 
                 tr.appendChild(td);
             });
