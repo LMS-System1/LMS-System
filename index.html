@@ -83,6 +83,10 @@
         .celda-cb { background-color: var(--cb-bg); color: var(--cb-texto); }
         .monto-rojo-cb { color: #ef4444 !important; background-color: #ffffff !important; font-weight: 700; }
 
+        /* Toggle Button Style */
+        .btn-toggle-off { background: #10b981; }
+        .btn-toggle-on { background: #f43f5e; }
+
         /* Calculadora */
         #calc-container { position: fixed; bottom: 80px; right: 25px; width: 220px; background: #1e293b; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 10000; padding: 12px; cursor: move; display: none; border: 1px solid #334155; }
         #calc-display { width: 100%; border: none; background: #0f172a; color: #10b981; padding: 12px; text-align: right; font-family: monospace; font-size: 1.3rem; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
@@ -127,6 +131,10 @@
             <button id="btnResetTotal" class="btn-cargar" style="background: #64748b;">
                 <i class="fas fa-trash-alt"></i> Limpiar mis marcas
             </button>
+
+            <button id="btnToggleManual" class="btn-cargar btn-toggle-off">
+                <i class="fas fa-lock-open"></i> Coloreo: OFF
+            </button>
         </div>
         
         <button id="downloadPdf" class="btn-cargar" style="background: #dc2626; display: none;">
@@ -153,7 +161,7 @@
             <div class="info-card">
                 <div>
                     <h4>Unidad: <span id="unidadNombre" style="color:var(--accent)">-</span></h4>
-                    <h4>Líder: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
+                    <h4>Líder de Cuenta: <span id="liderNombre" style="color:var(--accent)">-</span></h4>
                 </div>
             </div>
             <div class="info-card" style="border-top: 4px solid var(--accent);">
@@ -204,6 +212,7 @@
 
 <script>
     let modoBusquedaCero = false;
+    let coloreoBloqueado = false; // Variable para controlar el Trigger
 
     function formatMoney(val) {
         if (val === null || val === undefined || isNaN(val)) return "-";
@@ -211,6 +220,8 @@
     }
 
     function rotarColor(e) {
+        if (coloreoBloqueado) return; // Si está ON (bloqueado), no hace nada
+
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
         let actualIdx = 0;
@@ -219,6 +230,19 @@
         let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
         if (estadosManuales[siguienteIdx] !== '') td.classList.add(estadosManuales[siguienteIdx]);
     }
+
+    // Lógica del Botón Trigger
+    document.getElementById('btnToggleManual').addEventListener('click', function() {
+        coloreoBloqueado = !coloreoBloqueado;
+        const btn = this;
+        if (coloreoBloqueado) {
+            btn.innerHTML = '<i class="fas fa-lock"></i> Coloreo: ON';
+            btn.className = 'btn-cargar btn-toggle-on';
+        } else {
+            btn.innerHTML = '<i class="fas fa-lock-open"></i> Coloreo: OFF';
+            btn.className = 'btn-cargar btn-toggle-off';
+        }
+    });
 
     document.getElementById('btnResetTotal').addEventListener('click', function() {
         const marcados = document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo');
