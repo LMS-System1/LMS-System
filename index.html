@@ -58,7 +58,7 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* --- ESTADOS MANUALES (PRIORIDAD MÁXIMA) --- */
+        /* PRIORIDAD ABSOLUTA PARA MARCAS MANUALES */
         .manual-verde { background-color: #22c55e !important; color: white !important; border-left: none !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; border-left: none !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; border-left: none !important; }
@@ -66,7 +66,7 @@
         .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
         .celda-interactiva:hover { filter: brightness(0.9); }
 
-        /* Colores del Sistema */
+        /* Colores base */
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
         .celda-comi-mp { background-color: var(--comi-mp); color: var(--comi-mp-text); }
@@ -75,7 +75,6 @@
         .celda-first-data { background-color: var(--bordo-claro); color: var(--bordo-texto); }
         .celda-cb { background-color: var(--cb-bg); color: var(--cb-texto); }
 
-        /* Calculadora */
         #calc-container { position: fixed; bottom: 80px; right: 25px; width: 220px; background: #1e293b; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 10000; padding: 12px; cursor: move; display: none; border: 1px solid #334155; }
         #calc-display { width: 100%; border: none; background: #0f172a; color: #10b981; padding: 12px; text-align: right; font-family: monospace; font-size: 1.3rem; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
         .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
@@ -190,232 +189,188 @@
 
     function rotarColor(e) {
         const td = e.currentTarget;
-        const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
+        const estados = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
         let actualIdx = 0;
-        
-        // Identificar estado actual
-        estadosManuales.forEach((cls, idx) => {
-            if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
-        });
-        
-        // Limpiar estados previos
-        estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
-        
-        // Aplicar siguiente
-        let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
-        if (estadosManuales[siguienteIdx] !== '') {
-            td.classList.add(estadosManuales[siguienteIdx]);
-        }
+        estados.forEach((cls, idx) => { if(cls !== '' && td.classList.contains(cls)) actualIdx = idx; });
+        estados.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
+        let next = (actualIdx + 1) % estados.length;
+        if(estados[next] !== '') td.classList.add(estados[next]);
     }
 
-    document.getElementById('btnResetTotal').addEventListener('click', function() {
-        const marcados = document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo');
-        marcados.forEach(el => el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo'));
-    });
+    document.getElementById('btnResetTotal').onclick = () => {
+        document.querySelectorAll('.manual-verde, .manual-naranja, .manual-rojo').forEach(el => el.classList.remove('manual-verde', 'manual-naranja', 'manual-rojo'));
+    };
 
-    async function generarHash(string) {
-        const msgUint8 = new TextEncoder().encode(string);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    async function generarHash(s) {
+        const b = new TextEncoder().encode(s);
+        const h = await crypto.subtle.digest('SHA-256', b);
+        return Array.from(new Uint8Array(h)).map(x => x.toString(16).padStart(2, '0')).join('');
     }
 
     async function validarLogin() {
         const u = document.getElementById('user').value;
         const p = document.getElementById('pass').value;
-        const hashIngresado = await generarHash(p);
-        if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u] === hashIngresado) {
+        const h = await generarHash(p);
+        if (typeof DB_USUARIOS !== 'undefined' && DB_USUARIOS[u] === h) {
             document.getElementById('user-display').innerText = u;
             document.getElementById('login-overlay').remove();
             document.getElementById('main-content').style.display = 'block';
             document.getElementById('open-calc-btn').style.display = 'flex';
-        } else { alert("Credenciales incorrectas."); }
+        } else alert("Credenciales incorrectas.");
     }
     document.getElementById('btnLogin').onclick = validarLogin;
 
-    function abrirSelector(esModoBusqueda) { modoBusquedaCero = esModoBusqueda; document.getElementById('upload').click(); }
+    function abrirSelector(b) { modoBusquedaCero = b; document.getElementById('upload').click(); }
     
-    function limpiarMonto(valor) { 
-        if (valor === undefined || valor === null || valor === "") return null; 
-        if (typeof valor === 'number') return valor; 
-        let s = valor.toString().trim(); 
+    function limpiarMonto(v) { 
+        if (!v && v !== 0) return null; if (typeof v === 'number') return v; 
+        let s = v.toString().trim(); 
         if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.'); 
         else if (s.includes(',')) s = s.replace(',', '.'); 
-        let num = parseFloat(s.replace(/[^0-9.-]/g, '')); 
-        return isNaN(num) ? null : num; 
+        let n = parseFloat(s.replace(/[^0-9.-]/g, '')); return isNaN(n) ? null : n; 
     }
 
-    function excelDateToJS(serial) { 
-        if (typeof serial === 'number') return new Date(Math.round((serial - 25569) * 86400 * 1000)); 
-        let d = new Date(serial); return isNaN(d.getTime()) ? new Date(0) : d; 
+    function excelDateToJS(s) { 
+        if (typeof s === 'number') return new Date(Math.round((s - 25569) * 86400 * 1000)); 
+        let d = new Date(s); return isNaN(d.getTime()) ? new Date(0) : d; 
     }
 
-    document.getElementById('upload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const data = new Uint8Array(event.target.result);
-            const workbook = XLSX.read(data, {type: 'array', cellDates: true});
-            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: "A", defval: ""});
-            if(rows.length > 0) { 
-                if (modoBusquedaCero) { procesarUltimoCero(rows); } else { generarReporte(rows); } 
-            }
+    document.getElementById('upload').onchange = (e) => {
+        const f = e.target.files[0]; if(!f) return;
+        const r = new FileReader();
+        r.onload = (ev) => {
+            const d = new Uint8Array(ev.target.result);
+            const w = XLSX.read(d, {type: 'array', cellDates: true});
+            const rows = XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]], {header: "A", defval: ""});
+            if(rows.length > 0) modoBusquedaCero ? procesarUltimoCero(rows) : generarReporte(rows);
             e.target.value = '';
         };
-        reader.readAsArrayBuffer(file);
-    });
+        r.readAsArrayBuffer(f);
+    };
 
     function procesarUltimoCero(rows) {
-        let encontrado = false;
+        let ok = false;
         for (let i = rows.length - 1; i >= 1; i--) {
-            const valorL = limpiarMonto(rows[i].L);
-            if (valorL === 0 && rows[i].L !== "") {
+            if (limpiarMonto(rows[i].L) === 0 && rows[i].L !== "") {
                 alert(`Último $0 encontrado:\nBanco: ${rows[i].C}\nLíder: ${rows[i].D}\nFecha: ${rows[i].E}`);
-                encontrado = true; break;
+                ok = true; break;
             }
         }
-        if (!encontrado) alert("No se encontró balance en 0.");
+        if (!ok) alert("No se encontró balance en 0.");
     }
 
     function generarReporte(rows) {
         document.getElementById('reporte-area').style.display = 'block';
         document.getElementById('unidadNombre').innerText = rows[1]?.B || "N/A";
-        
-        let lider = "No identificado";
-        for(let r of rows) { if(r.C && r.C.toString().includes("HSBC")) { lider = r.D; break; } }
-        document.getElementById('liderNombre').innerText = lider;
+        let lid = "No identificado";
+        for(let r of rows) if(r.C?.toString().includes("HSBC")) { lid = r.D; break; }
+        document.getElementById('liderNombre').innerText = lid;
 
-        const saldo = limpiarMonto(rows[rows.length-1]?.L) || 0;
-        document.getElementById('saldoFinal').innerText = "$" + formatMoney(saldo);
+        const sld = limpiarMonto(rows[rows.length-1]?.L) || 0;
+        document.getElementById('saldoFinal').innerText = "$" + formatMoney(sld);
         const tag = document.getElementById('estadoTexto');
-        tag.style.background = saldo < 0 ? 'var(--negativo)' : (saldo > 0 ? 'var(--positivo)' : 'var(--neutro)');
-        tag.innerText = saldo < 0 ? "SOBRE REPORTADO" : (saldo > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
+        tag.style.background = sld < 0 ? 'var(--negativo)' : (sld > 0 ? 'var(--positivo)' : 'var(--neutro)');
+        tag.innerText = sld < 0 ? "SOBRE REPORTADO" : (sld > 0 ? "FALTA REPORTAR" : "CONSOLIDADO");
 
         let cJ = new Set(), cK = new Set();
         for(let i=1; i<rows.length; i++) {
-            let mK = limpiarMonto(rows[i].K);
-            if(!mK) continue;
-            let fE = excelDateToJS(rows[i].E);
+            let mk = limpiarMonto(rows[i].K); if(!mk) continue;
+            let fe = excelDateToJS(rows[i].E);
             for(let j=1; j<rows.length; j++){
-                if(cJ.has(j)) continue;
-                if(mK === limpiarMonto(rows[j].J) && Math.abs(fE - excelDateToJS(rows[j].E)) <= 864000000) {
+                if(!cJ.has(j) && mk === limpiarMonto(rows[j].J) && Math.abs(fe - excelDateToJS(rows[j].E)) <= 864000000) {
                     cK.add(i); cJ.add(j); break;
                 }
             }
         }
 
-        const totalesFD = {};
+        const tFD = {};
         rows.forEach(f => {
             if((f.I||"").includes("FIRST DATA")) {
-                let fe = f.E ? f.E.toString() : "SF";
-                totalesFD[fe] = (totalesFD[fe]||0) + (limpiarMonto(f.J)||0);
+                let e = f.E?.toString() || "SF";
+                tFD[e] = (tFD[e]||0) + (limpiarMonto(f.J)||0);
             }
         });
 
         const cols = ['E','F','G','H','I','J','K'];
-        const hRow = document.getElementById('tableHeader');
-        hRow.innerHTML = '';
-        cols.forEach(c => { let th=document.createElement('th'); th.innerText=rows[0][c]||c; hRow.appendChild(th); });
-        hRow.innerHTML += '<th>Monto Neto</th><th>Comision MP</th><th>TOTAL FD</th>';
+        const h = document.getElementById('tableHeader'); h.innerHTML = '';
+        cols.forEach(c => { let th=document.createElement('th'); th.innerText=rows[0][c]||c; h.appendChild(th); });
+        h.innerHTML += '<th>Monto Neto</th><th>Comision MP</th><th>TOTAL FD</th>';
 
-        const body = document.getElementById('tableBody');
-        body.innerHTML = '';
+        const body = document.getElementById('tableBody'); body.innerHTML = '';
 
         for(let i=1; i<rows.length; i++){
-            const fila = rows[i];
-            if(!fila.E && !fila.I) continue;
+            const f = rows[i]; if(!f.E && !f.I) continue;
             const tr = document.createElement('tr');
-            const desc = (fila.I || "").toString().toUpperCase();
-            const esMP = (fila.H||"").toString().startsWith("***") && desc.startsWith("MERPAGO");
-            const esFD = desc.includes("FIRST DATA");
-            const esCB = desc.includes("CB");
-            
+            const d = (f.I || "").toString().toUpperCase();
+            const isMP = (f.H||"").toString().startsWith("***") && d.startsWith("MERPAGO");
+            const isFD = d.includes("FIRST DATA");
+
             cols.forEach(c => {
                 const td = document.createElement('td');
-                let monto = limpiarMonto(fila[c]);
-                td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
+                let m = limpiarMonto(f[c]);
+                td.innerText = (c==='J'||c==='K') && m !== null ? formatMoney(m) : (f[c]||'');
                 
-                // Activar clic en Descripcion e importes J/K
-                if(c==='I' || c==='J' || c==='K') {
-                    td.classList.add('celda-interactiva');
-                    td.onclick = rotarColor;
-                }
+                // Clic habilitado en I, J, K
+                if(['I','J','K'].includes(c)) { td.classList.add('celda-interactiva'); td.onclick = rotarColor; }
 
-                // Colores de sistema
                 if(c==='J' || c==='K') {
-                    if(monto !== 0 && monto !== null) {
-                        if(c==='J' && esFD) {
-                            td.classList.add('celda-first-data');
-                        } else {
-                            td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
-                        }
+                    if(m !== 0 && m !== null) {
+                        if(c==='J' && isFD) td.classList.add('celda-first-data');
+                        else td.classList.add( (c==='J' ? cJ.has(i) : cK.has(i)) ? 'celda-match' : 'celda-sin-match' );
                     }
                 }
-                
                 if(c==='I'){
-                    if(desc.includes("COMI MP")) td.classList.add('celda-comi-mp');
-                    if(esMP) td.classList.add('celda-descripcion-mp');
-                    if(esFD) td.classList.add('celda-first-data');
-                    if(esCB) td.classList.add('celda-cb');
+                    if(d.includes("COMI MP")) td.classList.add('celda-comi-mp');
+                    if(isMP) td.classList.add('celda-descripcion-mp');
+                    if(isFD) td.classList.add('celda-first-data');
+                    if(d.includes("CB")) td.classList.add('celda-cb');
                 }
                 tr.appendChild(td);
             });
 
-            // Columnas extras
-            let nVal = "-", cVal = "-", tVal = "-";
-            if(esMP) {
-                let v = Math.abs(limpiarMonto(fila.J)||0);
-                cVal = formatMoney(v/6.099);
-                nVal = formatMoney(v - (v/6.099));
+            // Columnas Calculadas (Siempre con clic habilitado)
+            let n="-", c="-", t="-";
+            if(isMP) {
+                let v = Math.abs(limpiarMonto(f.J)||0);
+                c = formatMoney(v/6.099); n = formatMoney(v - (v/6.099));
             }
-            if(esFD) {
-                let fe = fila.E ? fila.E.toString() : "SF";
-                if (fe !== (rows[i + 1]?.E?.toString() || null)) tVal = formatMoney(totalesFD[fe]);
+            if(isFD) {
+                let e = f.E?.toString() || "SF";
+                if (e !== (rows[i + 1]?.E?.toString() || null)) t = formatMoney(tFD[e]);
             }
 
-            [nVal, cVal, tVal].forEach((txt, idx) => {
+            [n, c, t].forEach((val, idx) => {
                 const td = document.createElement('td');
-                td.innerText = txt;
+                td.innerText = val;
                 td.classList.add('celda-interactiva');
                 td.onclick = rotarColor;
-                
-                if(idx < 2) td.classList.add('celda-descripcion-mp');
-                else td.classList.add('bg-total-fd');
-                
+                if(idx < 2) td.classList.add('celda-descripcion-mp'); else td.classList.add('bg-total-fd');
                 tr.appendChild(td);
             });
-
             body.appendChild(tr);
         }
         document.getElementById('downloadPdf').style.display = 'flex';
     }
 
     document.getElementById('downloadPdf').onclick = () => {
-        const element = document.getElementById('reporte-area');
-        html2pdf().set({ margin: 5, filename: 'Reporte_DBU004.pdf', html2canvas: { scale: 3 }, jsPDF: { orientation: 'landscape' } }).from(element).save();
+        html2pdf().set({ margin: 5, filename: 'Reporte.pdf', html2canvas: { scale: 3 }, jsPDF: { orientation: 'landscape' } }).from(document.getElementById('reporte-area')).save();
     };
 
     function toggleCalc() { const c = document.getElementById('calc-container'); c.style.display = (c.style.display==='none'||c.style.display==='')?'block':'none'; }
     function calcInput(v) { document.getElementById('calc-display').value += v; }
     function calcClear() { document.getElementById('calc-display').value = ''; }
     function calcBackspace() { let d = document.getElementById('calc-display'); d.value = d.value.slice(0,-1); }
-    function calcResult() { 
-        try { 
-            let res = eval(document.getElementById('calc-display').value); 
-            document.getElementById('calc-display').value = Number.isInteger(res) ? res : res.toFixed(2);
-        } catch(e) { document.getElementById('calc-display').value = "Error"; setTimeout(calcClear, 1000); } 
-    }
+    function calcResult() { try { let r = eval(document.getElementById('calc-display').value); document.getElementById('calc-display').value = Number.isInteger(r) ? r : r.toFixed(2); } catch(e) { document.getElementById('calc-display').value = "Error"; setTimeout(calcClear, 1000); } }
     document.getElementById('close-calc').onclick = toggleCalc;
 
-    const calc = document.getElementById("calc-container");
-    const header = document.getElementById("calc-header");
+    const cl = document.getElementById("calc-container"), h = document.getElementById("calc-header");
     let px=0, py=0, cx=0, cy=0;
-    header.onmousedown = (e) => {
+    h.onmousedown = (e) => {
         e.preventDefault(); cx=e.clientX; cy=e.clientY;
         document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
         document.onmousemove = (e) => {
             e.preventDefault(); px=cx-e.clientX; py=cy-e.clientY; cx=e.clientX; cy=e.clientY;
-            calc.style.top = (calc.offsetTop - py) + "px"; calc.style.left = (calc.offsetLeft - px) + "px";
+            cl.style.top = (cl.offsetTop - py) + "px"; cl.style.left = (cl.offsetLeft - px) + "px";
         };
     };
 </script>
