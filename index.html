@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LMS System</title>
+    <title>LECTOR DBU-004 - LMS</title>
     
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -58,6 +58,7 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
+        /* --- ESTADOS MANUALES --- */
         .manual-verde { background-color: #22c55e !important; color: white !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; }
@@ -65,6 +66,7 @@
         .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
         .celda-interactiva:hover { filter: brightness(0.9); }
 
+        /* --- CLASES DE LOGICA --- */
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
         .celda-comi-mp { background-color: var(--comi-mp) !important; color: var(--comi-mp-text) !important; }
@@ -185,6 +187,7 @@
     let modoBusquedaCero = false;
     let isLocked = true;
 
+    // Lógica del Botón Lock
     document.getElementById('btnLock').addEventListener('click', function() {
         isLocked = !isLocked;
         this.style.background = isLocked ? 'var(--positivo)' : 'var(--negativo)';
@@ -198,14 +201,18 @@
     }
 
     function rotarColor(e) {
-        if (isLocked) return;
+        if (isLocked) return; // Si está bloqueado, no hace nada
+
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
+
         let actualIdx = 0;
         estadosManuales.forEach((cls, idx) => {
             if (cls !== '' && td.classList.contains(cls)) actualIdx = idx;
         });
+
         estadosManuales.forEach(cls => { if(cls !== '') td.classList.remove(cls); });
+
         let siguienteIdx = (actualIdx + 1) % estadosManuales.length;
         if (estadosManuales[siguienteIdx] !== '') {
             td.classList.add(estadosManuales[siguienteIdx]);
@@ -274,60 +281,15 @@
     });
 
     function procesarUltimoCero(rows) {
-        const areaReporte = document.getElementById('reporte-area');
-        const body = document.getElementById('tableBody');
-        const hRow = document.getElementById('tableHeader');
-        
-        hRow.innerHTML = '';
-        body.innerHTML = '';
-        areaReporte.style.display = 'block';
-
-        let filaEncontrada = null;
-
+        let encontrado = false;
         for (let i = rows.length - 1; i >= 1; i--) {
             const valorL = limpiarMonto(rows[i].L);
             if (valorL === 0 && rows[i].L !== "") {
-                filaEncontrada = rows[i];
-                break;
+                alert(`Último $0 encontrado:\nBanco: ${rows[i].C}\nLíder: ${rows[i].D}\nFecha: ${rows[i].E}`);
+                encontrado = true; break;
             }
         }
-
-        if (filaEncontrada) {
-            const columnasBusqueda = ['B', 'C', 'D', 'E', 'L'];
-            const encabezadosBusqueda = ['Unidad', 'Banco', 'Líder', 'Fecha', 'Balance'];
-            
-            encabezadosBusqueda.forEach(txt => {
-                let th = document.createElement('th');
-                th.innerText = txt;
-                hRow.appendChild(th);
-            });
-
-            const tr = document.createElement('tr');
-            columnasBusqueda.forEach(col => {
-                const td = document.createElement('td');
-                if (col === 'L') {
-                    td.innerText = "$ 0,00";
-                    td.classList.add('celda-match');
-                } else {
-                    td.innerText = filaEncontrada[col] || '';
-                }
-                tr.appendChild(td);
-            });
-            body.appendChild(tr);
-
-            // ACTUALIZACIÓN DE TARJETAS CON COLUMNA B Y D
-            document.getElementById('unidadNombre').innerText = filaEncontrada.B || "N/A";
-            document.getElementById('liderNombre').innerText = filaEncontrada.D || "N/A";
-            document.getElementById('saldoFinal').innerText = "$ 0,00";
-            
-            const tag = document.getElementById('estadoTexto');
-            tag.innerText = "ÚLTIMO CIERRE ENCONTRADO";
-            tag.style.background = "var(--neutro)";
-            document.getElementById('downloadPdf').style.display = 'none';
-        } else {
-            alert("No se encontró ningún balance en $0 en este archivo.");
-            areaReporte.style.display = 'none';
-        }
+        if (!encontrado) alert("No se encontró balance en 0.");
     }
 
     function generarReporte(rows) {
@@ -391,6 +353,7 @@
                 if(c==='J' || c==='K') {
                     td.classList.add('celda-interactiva');
                     td.onclick = rotarColor;
+                    
                     if(monto !== 0 && monto !== null) {
                         if(c==='J' && esFD) {
                             td.classList.add('celda-first-data');
@@ -424,13 +387,15 @@
                 const td = document.createElement('td');
                 td.innerText = v;
                 td.classList.add('celda-interactiva');
-                td.onclick = rotarColor; 
+                
                 if (v !== "-") {
+                    td.onclick = rotarColor;
                     if (idx === 0 || idx === 1) td.classList.add('celda-descripcion-mp');
                     if (idx === 2) td.classList.add('bg-total-fd');
                 }
                 tr.appendChild(td);
             });
+
             body.appendChild(tr);
         }
         document.getElementById('downloadPdf').style.display = 'flex';
