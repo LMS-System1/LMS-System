@@ -47,7 +47,6 @@
         
         #upload { display: none; }
 
-        /* Estilo para el área de búsqueda de Cero */
         #search-zero-area { margin-bottom: 1.5rem; display: none; animation: fadeIn 0.4s ease; }
         .search-table { width: 100%; background: white; border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-collapse: collapse; }
         .search-table th { background: #334155; color: white; padding: 12px; text-align: left; font-size: 0.85rem; }
@@ -65,7 +64,6 @@
         th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
         td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; }
         
-        /* ESTADOS MANUALES */
         .manual-verde { background-color: #22c55e !important; color: white !important; border-left: none !important; }
         .manual-naranja { background-color: #f59e0b !important; color: white !important; border-left: none !important; }
         .manual-rojo { background-color: #ef4444 !important; color: white !important; border-left: none !important; }
@@ -73,7 +71,6 @@
         .celda-interactiva { cursor: pointer; user-select: none; transition: background 0.2s; }
         .celda-interactiva:hover { filter: brightness(0.9); }
 
-        /* Colores del Sistema */
         .celda-match { background-color: var(--match-bg); color: var(--match-text); }
         .celda-sin-match { background-color: var(--no-match); color: var(--no-match-text); }
         .celda-comi-mp { background-color: var(--comi-mp); color: var(--comi-mp-text); }
@@ -83,11 +80,9 @@
         .celda-cb { background-color: var(--cb-bg); color: var(--cb-texto); }
         .monto-rojo-cb { color: #ef4444 !important; background-color: #ffffff !important; font-weight: 700; }
 
-        /* Toggle Button Style */
         .btn-toggle-off { background: #10b981; }
         .btn-toggle-on { background: #f43f5e; }
 
-        /* Calculadora */
         #calc-container { position: fixed; bottom: 80px; right: 25px; width: 220px; background: #1e293b; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 10000; padding: 12px; cursor: move; display: none; border: 1px solid #334155; }
         #calc-display { width: 100%; border: none; background: #0f172a; color: #10b981; padding: 12px; text-align: right; font-family: monospace; font-size: 1.3rem; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
         .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
@@ -212,7 +207,7 @@
 
 <script>
     let modoBusquedaCero = false;
-    let coloreoBloqueado = false; // Variable para controlar el Trigger
+    let coloreoBloqueado = false;
 
     function formatMoney(val) {
         if (val === null || val === undefined || isNaN(val)) return "-";
@@ -220,8 +215,7 @@
     }
 
     function rotarColor(e) {
-        if (coloreoBloqueado) return; // Si está ON (bloqueado), no hace nada
-
+        if (coloreoBloqueado) return;
         const td = e.currentTarget;
         const estadosManuales = ['', 'manual-verde', 'manual-naranja', 'manual-rojo'];
         let actualIdx = 0;
@@ -231,7 +225,6 @@
         if (estadosManuales[siguienteIdx] !== '') td.classList.add(estadosManuales[siguienteIdx]);
     }
 
-    // Lógica del Botón Trigger
     document.getElementById('btnToggleManual').addEventListener('click', function() {
         coloreoBloqueado = !coloreoBloqueado;
         const btn = this;
@@ -407,7 +400,13 @@
                 const td = document.createElement('td');
                 let monto = limpiarMonto(fila[c]);
                 td.innerText = (c==='J'||c==='K') && monto !== null ? formatMoney(monto) : (fila[c]||'');
-                if(c==='I' || c==='J' || c==='K') { td.classList.add('celda-interactiva'); td.onclick = rotarColor; }
+                
+                // ACTIVAR INTERACTIVIDAD
+                // Activamos para I, J y también para K cuando es un registro CB
+                if(c==='I' || c==='J' || (c==='K' && esCeldaCabeceraCB)) { 
+                    td.classList.add('celda-interactiva'); 
+                    td.onclick = rotarColor; 
+                }
 
                 if(c==='J' || c==='K') {
                     if(monto !== 0 && monto !== null) {
