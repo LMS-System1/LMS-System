@@ -46,6 +46,9 @@
         
         #upload { display: none; }
 
+        /* Controles específicos del Lector */
+        #lector-controls { display: none; align-items: center; gap: 12px; flex-wrap: wrap; }
+
         #search-zero-area { margin-bottom: 1.5rem; display: none; animation: fadeIn 0.4s ease; }
         .search-table { width: 100%; background: white; border-collapse: collapse; }
         .search-table th { background: #f1f5f9; color: var(--neutro); padding: 1rem; text-align: left; font-size: 0.85rem; border-bottom: 2px solid var(--border); }
@@ -119,15 +122,18 @@
             <button class="btn-cargar" style="background: var(--neutro);" onclick="abrirSelector(true)">
                 <i class="fas fa-history"></i> Ult. vez en "0"
             </button>
+            
             <input type="file" id="upload" accept=".xlsx, .xls" />
             
-            <button id="btnResetTotal" class="btn-cargar" style="background: #64748b;">
-                <i class="fas fa-trash-alt"></i> Limpiar mis marcas
-            </button>
+            <div id="lector-controls">
+                <button id="btnResetTotal" class="btn-cargar" style="background: #64748b;">
+                    <i class="fas fa-trash-alt"></i> Limpiar mis marcas
+                </button>
 
-            <button id="btnToggleManual" class="btn-cargar btn-toggle-off">
-                <i class="fas fa-lock-open"></i> Coloreo: OFF
-            </button>
+                <button id="btnToggleManual" class="btn-cargar btn-toggle-off">
+                    <i class="fas fa-lock-open"></i> Coloreo: OFF
+                </button>
+            </div>
         </div>
         
         <button id="downloadPdf" class="btn-cargar" style="background: #dc2626; display: none;">
@@ -292,7 +298,11 @@
             const workbook = XLSX.read(data, {type: 'array', cellDates: true});
             const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: "A", defval: ""});
             if(rows.length > 0) { 
-                if (modoBusquedaCero) { procesarUltimoCero(rows); } else { generarReporte(rows); } 
+                if (modoBusquedaCero) { 
+                    procesarUltimoCero(rows); 
+                } else { 
+                    generarReporte(rows); 
+                } 
             }
             e.target.value = '';
         };
@@ -300,6 +310,9 @@
     });
 
     function procesarUltimoCero(rows) {
+        // Ocultamos controles del lector si estaban visibles
+        document.getElementById('lector-controls').style.display = 'none';
+        
         let encontrado = false;
         const body = document.getElementById('search-zero-body');
         body.innerHTML = '';
@@ -321,7 +334,7 @@
                 body.appendChild(tr);
                 
                 document.getElementById('search-zero-area').style.display = 'block';
-                document.getElementById('reporte-area').style.display = 'none'; // Ocultar reporte si existe
+                document.getElementById('reporte-area').style.display = 'none'; 
                 encontrado = true; 
                 break;
             }
@@ -330,6 +343,9 @@
     }
 
     function generarReporte(rows) {
+        // Mostramos controles del lector
+        document.getElementById('lector-controls').style.display = 'flex';
+        
         document.getElementById('search-zero-area').style.display = 'none';
         document.getElementById('reporte-area').style.display = 'block';
         document.getElementById('unidadNombre').innerText = rows[1]?.B || "N/A";
