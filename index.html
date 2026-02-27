@@ -356,13 +356,24 @@
                 tr.appendChild(td);
             });
 
-            // Columnas extras corregidas
+            // Columnas extras corregidas con lógica de fechas según tu pedido
             let nVal = "-", cVal = "-", tVal = "-";
             if(esMP) {
                 let v = Math.abs(limpiarMonto(fila.J)||0);
                 if (v > 0) {
-                    nVal = formatMoney(v/1.0699);
-                    cVal = formatMoney(v - (v/1.0699));
+                    let fechaFila = excelDateToJS(fila.E);
+                    let divisor = 1.0699; // Valor por defecto: desde el 1 de febrero 2025 en adelante
+
+                    if (fechaFila >= new Date(2024, 2, 1) && fechaFila <= new Date(2024, 8, 30)) {
+                        // Desde el 1 de Marzo de 2024 hasta el 30 de septiembre 2024
+                        divisor = 1.0899;
+                    } else if (fechaFila > new Date(2024, 8, 30) && fechaFila < new Date(2025, 1, 1)) {
+                        // Desde el 1 de Octubre de 2024 hasta el 31 de enero de 2025
+                        divisor = 1.0799;
+                    }
+
+                    nVal = formatMoney(v / divisor);
+                    cVal = formatMoney(v - (v / divisor));
                 }
             }
             if(esFD) {
@@ -376,7 +387,6 @@
                 td.classList.add('celda-interactiva');
                 td.onclick = rotarColor;
                 
-                // SOLO COLOREA SI EL TEXTO NO ES "-"
                 if(txt !== "-") {
                     if(idx < 2) {
                         td.classList.add('celda-descripcion-mp');
@@ -424,4 +434,3 @@
 </script>
 </body>
 </html>
-
